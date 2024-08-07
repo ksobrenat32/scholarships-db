@@ -13,15 +13,15 @@ func main() {
 		LOG_FILE      string
 		LOG_LEVEL     string
 		DATABASE_FILE string
-		DEFAULT_SHEET string
-		err           error
+		//DEFAULT_SHEET string
+		err error
 	)
 
 	// Default values
 	LOG_FILE = "scholarships.log"
 	LOG_LEVEL = "INFO"
 	DATABASE_FILE = "scholarships.db"
-	DEFAULT_SHEET = "APROVECHAMIENTO"
+	//DEFAULT_SHEET = "APROVECHAMIENTO"
 	logOpts := &slog.HandlerOptions{
 		Level: slog.LevelInfo,
 	}
@@ -42,11 +42,11 @@ func main() {
 	}
 
 	// Get the default sheet from environment variable
-	if os.Getenv("DEFAULT_SHEET") != "" {
-		DEFAULT_SHEET = os.Getenv("DEFAULT_SHEET")
-	}
+	//if os.Getenv("DEFAULT_SHEET") != "" {
+	//DEFAULT_SHEET = os.Getenv("DEFAULT_SHEET")
+	//}
 
-	// Setup the log level
+	// --- LOGGING ---
 
 	switch LOG_LEVEL {
 	case "DEBUG":
@@ -78,6 +78,8 @@ func main() {
 	logger := slog.New(slog.NewTextHandler(logFile, logOpts))
 	slog.SetDefault(logger)
 
+	// --- DATABASE ---
+
 	// Check if the database file exists, if not, create it
 	if !code.ExistsDatabase(DATABASE_FILE) {
 		err := code.CreateDatabaseFile(DATABASE_FILE)
@@ -87,13 +89,11 @@ func main() {
 	}
 
 	// Get the database pointer
-	pt, err := code.GetDatabasePointer(DATABASE_FILE)
+	//pt, err := code.GetDatabasePointer(DATABASE_FILE)
 	if err != nil {
 		slog.Error(err.Error())
 	}
 
-	err = code.ReadNewSpreadSheet(pt, "APROVECHAMIENTO.xlsx", DEFAULT_SHEET)
-	if err != nil {
-		slog.Error(err.Error())
-	}
+	// --- WEB SERVER ---
+	code.StartWebServer()
 }

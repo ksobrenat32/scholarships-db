@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<!-- HTML5 in Spanish -->
+<html lang="es">
+    <head>
+        <meta charset="UTF-8" />
+
+        <!-- title -->
+        <title>SNTSA Becas</title>
+
+        <!-- Source bootstrap -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    </head>
+    <body>
+        <div class="container">
+            <h1 class="mt-5">Administrador de Historial de Becas para SNTSA</h1>
+
+            <!-- Descripción de sitio -->
+            <p>
+                Este sitio permite administrar la base de datos de los trabajadores del SNTSA y sus becarios, manteniendo un historial de los mismos.
+            </p>
+
+            <!-- Lista de funciones -->
+            <div class="mt-4">
+                <h2>Funciones</h2>
+                <div class="list-group">
+                    <a href="/upload" class="list-group-item list-group-item-action">
+                        Subir datos a la base de datos
+                        <p>
+                            En esta sección se sube un archivo de Excel con todos los datos de los trabajadores y sus becarios para hacer el registro en la base de datos.
+                        </p>
+                    </a>
+                    <a href="/generate" class="list-group-item list-group-item-action">
+                        Generación de hoja de datos
+                        <p>
+                            En esta sección se sube un archivo de Excel con nombres completos de los trabajadores. Se detectan usuarios no existentes o duplicados y se genera un archivo de Excel con los datos completos de los trabajadores junto a el becario seleccionado.
+                        </p>
+                    </a>
+                    <a href="/search" class="list-group-item list-group-item-action">
+                        Buscar trabajador
+                        <p>
+                            En esta sección se puede hacer búsquedas de los datos de los trabajadores, becarios y su historial.
+                        </p>
+                    </a>
+                    <a href="/list" class="list-group-item list-group-item-action">
+                        Listar datos de los trabajadores
+                        <p>
+                            En esta sección se puede listar todos los trabajadores y sus becarios registrados en la base de datos.
+                        </p>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    </body>
+</html>

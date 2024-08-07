@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<!-- HTML5 in Spanish -->
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+
+    <!-- title -->
+    <title>SNTSA Becas</title>
+
+    <!-- Source bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  </head>
+  <body>
+    <div class="container">
+      <div class="d-flex justify-content-between align-items-center">
+        <h1 class="mt-5">Administrador de Historial de Becas para SNTSA</h1>
+        <a href="/" class="btn btn-primary mt-3">Regresar</a>
+      </div>
+
+      <!-- Descripción de sitio-->
+      <p class="description">
+        Este sitio permite subir un archivo de Excel con datos de los trabajadores del SNTSA y sus becarios, para almacenar en la base de datos.
+      </p>
+
+      <!-- Flujo de trabajo-->
+      <div class="workflow-steps">
+        <h2>Flujo de trabajo</h2>
+        <p>
+          Para subir los datos de los trabajadores y sus becarios, sigue los siguientes pasos:
+        </p>
+        <ol>
+          <li>Descarga el archivo de Excel de ejemplo <a href="/download">aquí</a>.</li>
+          <li>Llena el archivo de Excel con los datos de los trabajadores y sus becarios.</li>
+          <li>Sube el archivo de Excel con los datos de los trabajadores y sus becarios.</li>
+          <li>En caso de existir cambios, selecciona los datos a actualizar</li>
+        </ol>
+      </div>
+
+      <!-- Form de datos -->
+      <div class="upload-form">
+        <h2>Subir archivo de Excel</h2>
+        <div>
+          <form
+            enctype="multipart/form-data"
+            action="/upload"
+            method="post"
+          >
+            <div class="form-group">
+              <label for="excel-file">Archivo de Excel</label>
+              <input type="file" class="form-control-file" name="excel-file" />
+            </div>
+            <button type="submit" class="btn btn-primary">Subir</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+  </body>
+</html>
