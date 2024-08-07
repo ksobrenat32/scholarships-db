@@ -8,45 +8,13 @@ import (
 )
 
 func main() {
-	// Environment variables
-	var (
-		LOG_FILE      string
-		LOG_LEVEL     string
-		DATABASE_FILE string
-		//DEFAULT_SHEET string
-		err error
-	)
+	// --- LOGGING ---
+	LOG_FILE := code.GetLogFile()
+	LOG_LEVEL := code.GetLogLevel()
 
-	// Default values
-	LOG_FILE = "scholarships.log"
-	LOG_LEVEL = "INFO"
-	DATABASE_FILE = "scholarships.db"
-	//DEFAULT_SHEET = "APROVECHAMIENTO"
 	logOpts := &slog.HandlerOptions{
 		Level: slog.LevelInfo,
 	}
-
-	// Get the log file from environment variable
-	if os.Getenv("LOG_FILE") != "" {
-		LOG_FILE = os.Getenv("LOG_FILE")
-	}
-
-	// Get the log level from environment variable
-	if os.Getenv("LOG_LEVEL") != "" {
-		LOG_LEVEL = os.Getenv("LOG_LEVEL")
-	}
-
-	// Get the database file from environment variable
-	if os.Getenv("DATABASE_FILE") != "" {
-		DATABASE_FILE = os.Getenv("DATABASE_FILE")
-	}
-
-	// Get the default sheet from environment variable
-	//if os.Getenv("DEFAULT_SHEET") != "" {
-	//DEFAULT_SHEET = os.Getenv("DEFAULT_SHEET")
-	//}
-
-	// --- LOGGING ---
 
 	switch LOG_LEVEL {
 	case "DEBUG":
@@ -81,17 +49,11 @@ func main() {
 	// --- DATABASE ---
 
 	// Check if the database file exists, if not, create it
-	if !code.ExistsDatabase(DATABASE_FILE) {
-		err := code.CreateDatabaseFile(DATABASE_FILE)
+	if !code.ExistsDatabase(code.GetDatabaseFile()) {
+		err := code.CreateDatabaseFile(code.GetDatabaseFile())
 		if err != nil {
 			slog.Error(err.Error())
 		}
-	}
-
-	// Get the database pointer
-	//pt, err := code.GetDatabasePointer(DATABASE_FILE)
-	if err != nil {
-		slog.Error(err.Error())
 	}
 
 	// --- WEB SERVER ---

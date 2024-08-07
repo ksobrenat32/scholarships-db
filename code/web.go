@@ -52,6 +52,18 @@ func uploadFile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	slog.Info(fmt.Sprintf("Successfully Uploaded File: %s to %s", handler.Filename, dst.Name()))
+
+	ptr, err := GetDatabasePointer(GetDatabaseFile())
+	if err != nil {
+		slog.Error(err.Error())
+		return
+	}
+
+	err = ReadNewSpreadSheet(ptr, dst.Name(), GetDefaultSheet())
+	if err != nil {
+		slog.Error("Error reading spreadsheet")
+		slog.Error(err.Error())
+	}
 }
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
@@ -70,6 +82,7 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 		slog.Debug("GET /upload")
 	case "POST":
 		uploadFile(w, r)
+		display(w, "upload", nil)
 		slog.Debug("POST /upload")
 	}
 }
