@@ -1,6 +1,7 @@
 package code
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"log/slog"
@@ -11,7 +12,7 @@ import (
 )
 
 // Compile templates on start of the application
-var templates = template.Must(template.ParseFiles("files/index.html", "files/upload.html"))
+var templates = template.Must(template.ParseFiles(GetFilesDirectory()+"/index.html", GetFilesDirectory()+"/upload.html", GetFilesDirectory()+"/list.html"))
 
 // Display the named template
 func display(w http.ResponseWriter, page string, data interface{}) {
@@ -37,7 +38,7 @@ func uploadFile(w http.ResponseWriter, r *http.Request) {
 
 	// Create file on the server
 	currentTime := time.Now()
-	dst, err := os.CreateTemp("uploads", fmt.Sprintf("%d-%d-%d", currentTime.Year(), currentTime.Month(), currentTime.Day())+"-*.xlsx")
+	dst, err := os.CreateTemp(GetUploadDirectory(), fmt.Sprintf("%d-%d-%d", currentTime.Year(), currentTime.Month(), currentTime.Day())+"-*.xlsx")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -66,6 +67,10 @@ func uploadFile(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func serveScript(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, GetFilesDirectory()+"/script.js")
+}
+
 func indexHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
@@ -87,9 +92,73 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func listHandler(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "GET":
+		display(w, "list", nil)
+		slog.Debug("GET /list")
+	}
+}
+
+// Returns a json with the list of trabajadores
+func listTrabajadoresHandler(w http.ResponseWriter, r *http.Request) {
+	ptr, err := GetDatabasePointer(GetDatabaseFile())
+	if err != nil {
+		slog.Error(err.Error())
+		return
+	}
+
+	var list [][4]string = GetAllListTrabajadores(ptr)
+	switch r.Method {
+	case "GET":
+		slog.Debug("GET /list/trabajadores")
+		w.Header().Set("Content-Type", "application/json")
+
+		// Convert to json
+		json, err := json.Marshal(list)
+		if err != nil {
+			slog.Error(err.Error())
+			return
+		}
+
+		// Send the json
+		w.Write(json)
+	}
+}
+
+// Returns a json with the list of becarios
+func listBecariosHandler(w http.ResponseWriter, r *http.Request) {
+	ptr, err := GetDatabasePointer(GetDatabaseFile())
+	if err != nil {
+		slog.Error(err.Error())
+		return
+	}
+
+	var list [][3]string = GetAllListBecarios(ptr)
+	switch r.Method {
+	case "GET":
+		slog.Debug("GET /list/becarios")
+		w.Header().Set("Content-Type", "application/json")
+
+		// Convert to json
+		json, err := json.Marshal(list)
+		if err != nil {
+			slog.Error(err.Error())
+			return
+		}
+
+		// Send the json
+		w.Write(json)
+	}
+}
+
 func StartWebServer() {
 	http.HandleFunc("/", indexHandler)
+	http.HandleFunc("/script.js", serveScript)
 	http.HandleFunc("/upload", uploadHandler)
-	slog.Info("Starting Web Server on :8080")
-	http.ListenAndServe(":8080", nil)
+	http.HandleFunc("/list", listHandler)
+	http.HandleFunc("/list/trabajadores", listTrabajadoresHandler)
+	http.HandleFunc("/list/becarios", listBecariosHandler)
+	slog.Info("Starting Web Server on :" + GetPort())
+	http.ListenAndServe(":"+GetPort(), nil)
 }

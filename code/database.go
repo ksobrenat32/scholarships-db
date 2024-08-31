@@ -369,6 +369,72 @@ func GetHistorial_becarioByCurpAnio(db *sql.DB, curp_becario string, anio string
 	return historial_becario, err
 }
 
+// GetAllListTrabajadores gets a list of all Trabajadores in the database (nombre completo, curp, correo, telefono)
+func GetAllListTrabajadores(db *sql.DB) [][4]string {
+	var response [][4]string
+	var row [4]string
+
+	query := `
+		SELECT nombres || ' ' || apellido_paterno || ' ' || apellido_materno, curp, correo_electronico, telefono FROM trabajadores
+	`
+
+	rows, err := db.Query(query)
+	if err != nil {
+		slog.Error(err.Error())
+		return nil
+	}
+
+	for rows.Next() {
+		// Clean the row
+		for i := 0; i < 4; i++ {
+			row[i] = ""
+		}
+
+		err = rows.Scan(&row[0], &row[1], &row[2], &row[3])
+
+		if err != nil {
+			slog.Error(err.Error())
+			return nil
+		}
+
+		// If row is not empty, append it to the response
+		if row[0] != "" {
+			response = append(response, row)
+		}
+	}
+
+	slog.Debug("Trabajadores retrieved successfully")
+	return response
+}
+
+// GetAllListBecarios gets a list of all Becarios in the database (nombre completo, curp, curp_trabajador)
+func GetAllListBecarios(db *sql.DB) [][3]string {
+	var response [][3]string
+	var row [3]string
+
+	query := `
+		SELECT nombres || ' ' || apellido_paterno || ' ' || apellido_materno, curp, curp_trabajador FROM becarios
+	`
+
+	rows, err := db.Query(query)
+	if err != nil {
+		slog.Error(err.Error())
+		return nil
+	}
+
+	for rows.Next() {
+		err = rows.Scan(&row[0], &row[1], &row[2])
+		if err != nil {
+			slog.Error(err.Error())
+			return nil
+		}
+		response = append(response, row)
+	}
+
+	slog.Debug("Becarios retrieved successfully")
+	return response
+}
+
 // InsertTrabajador inserts a Trabajador into the database
 func InsertTrabajador(db *sql.DB, trabajador Trabajador) error {
 	query := `

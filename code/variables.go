@@ -37,3 +37,30 @@ func GetDefaultSheet() string {
 	}
 	return DEFAULT_SHEET
 }
+
+// GetFilesDirectory
+func GetFilesDirectory() string {
+	FILES_DIRECTORY := "files"
+	if os.Getenv("FILES_DIRECTORY") != "" {
+		FILES_DIRECTORY = os.Getenv("FILES_DIRECTORY")
+	}
+	return FILES_DIRECTORY
+}
+
+// GetUploadDirectory
+func GetUploadDirectory() string {
+	UPLOAD_DIRECTORY := "uploads"
+	if os.Getenv("UPLOAD_DIRECTORY") != "" {
+		UPLOAD_DIRECTORY = os.Getenv("UPLOAD_DIRECTORY")
+	}
+	return UPLOAD_DIRECTORY
+}
+
+// GetPort
+func GetPort() string {
+	PORT := "8080"
+	if os.Getenv("PORT") != "" {
+		PORT = os.Getenv("PORT")
+	}
+	return PORT
+}
