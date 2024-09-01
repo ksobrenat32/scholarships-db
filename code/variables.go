@@ -4,7 +4,7 @@ import "os"
 
 // GetLogFile
 func GetLogFile() string {
-	LOG_FILE := "scholarships.log"
+	LOG_FILE := "data/scholarships.log"
 	if os.Getenv("LOG_FILE") != "" {
 		LOG_FILE = os.Getenv("LOG_FILE")
 	}
@@ -22,7 +22,7 @@ func GetLogLevel() string {
 
 // GetDatabaseFile
 func GetDatabaseFile() string {
-	DATABASE_FILE := "scholarships.db"
+	DATABASE_FILE := "data/scholarships.db"
 	if os.Getenv("DATABASE_FILE") != "" {
 		DATABASE_FILE = os.Getenv("DATABASE_FILE")
 	}

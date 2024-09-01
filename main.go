@@ -4,7 +4,7 @@ import (
 	"log/slog"
 	"os"
 
-	"gitlab.com/ksobrenat32/scholarships-db/code"
+	"github.com/ksobrenat32/scholarships-db/code"
 )
 
 func main() {

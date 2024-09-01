@@ -1,4 +1,4 @@
-module gitlab.com/ksobrenat32/scholarships-db
+module github.com/ksobrenat32/scholarships-db
 
 go 1.22.4
 
