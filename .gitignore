@@ -1,2 +1,6 @@
 .vscode/
+.venv/
+__pycache__/
 excel/
+db.sqlite3
+media/
