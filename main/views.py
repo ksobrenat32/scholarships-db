@@ -6,7 +6,9 @@ from django.db import IntegrityError
 from django.contrib.auth.decorators import login_required
 from main.forms import UsuarioCreateForm, TrabajadorCreateForm, BecarioCreateForm
 from main.models import Usuario
-
+from django.http import HttpResponseForbidden, FileResponse
+from django.conf import settings
+import os
 
 # Create your views here.
 
@@ -188,4 +190,16 @@ def create_becario(request, curp):
                 'curp': curp,
                 'error': 'Error al crear el becario'
             })
+
+# File download view
+@login_required
+def download_file(request, file_path):
+    if not request.user.is_staff:
+        return HttpResponseForbidden("You do not have permission to access this file.")
+
+    file_full_path = os.path.join(settings.MEDIA_ROOT, file_path)
+    if os.path.exists(file_full_path):
+        return FileResponse(open(file_full_path, 'rb'))
+    else:
+        return HttpResponseForbidden("File not found.")
 
