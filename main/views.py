@@ -3,6 +3,7 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
 from django.contrib.auth import login, logout, authenticate
 from django.db import IntegrityError
+from django.contrib.auth.decorators import login_required
 from main.forms import UsuarioCreateForm, TrabajadorCreateForm, BecarioCreateForm
 from main.models import Usuario
 
@@ -28,13 +29,15 @@ def signup(request):
                     request.POST['username'], password=request.POST['password1'])
                 user.save()
                 login(request, user)
-                return redirect('register')
+                return redirect('becas')
             except IntegrityError:
                 return render(request, 'signup.html', {
                     'form': UserCreationForm(),
                     'error': 'El usuario ya existe'
                 })
-            except:
+            # Ignore if the error is related to password complexity
+            except Exception as e:
+                print('Exception: ', e)
                 return render(request, 'signup.html', {
                     'form': UserCreationForm(),
                     'error': 'Error al crear el usuario'
@@ -68,17 +71,17 @@ def signin(request):
             })
         else:
             login(request, user)
-            return redirect('register')
-
+            return redirect('becas')
 
 # Becas view
 
-
+@login_required
 def becas(request):
     return render(request, 'becas.html')
 
 # Create_Usuario view
 
+@login_required
 def create_usuario(request):
     if request.method == 'GET':
         return render(request, 'create_usuario.html', {'form': UsuarioCreateForm()})
@@ -112,6 +115,9 @@ def create_usuario(request):
                 'error': 'Error al crear el usuario'
             })
 
+# Create_Trabajador view
+
+@login_required
 def create_trabajador(request, curp):
     if request.method == 'GET':
         return render(request, 'create_trabajador.html', {'form': TrabajadorCreateForm(), 'curp': curp})
@@ -147,6 +153,9 @@ def create_trabajador(request, curp):
                 'error': 'Error al crear el trabajador'
             })
 
+# Create_Becario view
+
+@login_required
 def create_becario(request, curp):
     if request.method == 'GET':
         return render(request, 'create_becario.html', {'form': BecarioCreateForm(), 'curp': curp})
