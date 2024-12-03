@@ -2,8 +2,29 @@
 
 {% block content %}
 
-<h1>Home</h1>
+<div class="row">
+    <div class="col-md-12">
+        <h1>Becas SNTSA</h1>
+        <p>El programa de becas de la SNTSA es un programa de apoyo a los trabajadores y sus familias.</p>
+    </div>
 
-Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptate earum nobis vel facilis impedit ullam sunt eligendi in deleniti dolores veritatis, facere laboriosam delectus libero id officia consequatur numquam alias.
+    <div class="col-md-12">
+        <h2>¿Qué es una beca?</h2>
+        <p>Una beca es un apoyo económico que se otorga a los trabajadores y sus familias para que puedan continuar con sus estudios.</p>
+    </div>
+
+    <div class="col-md-12">
+        <h2>¿Quiénes pueden solicitar una beca?</h2>
+        <p>Los trabajadores y sus familias que cumplan con los requisitos establecidos en la convocatoria.</p>
+    </div>
+
+    <div class="col-md-12">
+        <h2>¿Cómo solicitar una beca?</h2>
+        <p>Para solicitar una beca, los trabajadores y sus familias deben registrarse en el sistema y completar el formulario de solicitud de beca.</p>
+
+        <!-- Links a sign in y sign up como botón -->
+        <a href="{% url 'signin' %}" class="btn btn-primary">Iniciar sesión</a>
+        <a href="{% url 'signup' %}" class="btn btn-primary">Registrarse</a>
+</div>
 
 {% endblock %}

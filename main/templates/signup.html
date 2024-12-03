@@ -1,17 +1,43 @@
 {% extends 'base.html' %}
+{% load form_tags %}
 
 {% block content %}
 
-<h1>Registrar nuevo usuario</h1>
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="p-4 bg-secondary text-white rounded">
+            <h2 class="text-center">Registrar nuevo usuario</h2>
 
-{{ error }}
+            {% if error %}
+            <div class="alert alert-danger" role="alert">
+                {{ error }}
+            </div>
+            {% endif %}
 
-<form action="/signup/" method="post">
-    {% csrf_token %}
+            <form action="/signup/" method="post" class="mt-4">
+                {% csrf_token %}
 
-    {{ form.as_p }}
+                <!-- Sign Up form -->
 
-    <button type="submit">Registrar usuario</button>
-</form>
+                <div class="mb-3">
+                    <label for="username" class="form-label">Correo electrónico</label>
+                    {{ form.username|add_class:"form-control" }}
+                </div>
+
+                <div class="mb-3">
+                    <label for="password1" class="form-label">Contraseña</label>
+                    {{ form.password1|add_class:"form-control" }}
+                </div>
+
+                <div class="mb-3">
+                    <label for="password2" class="form-label">Confirmar contraseña</label>
+                    {{ form.password2|add_class:"form-control" }}
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block">Registrar usuario</button>
+            </form>
+        </div>
+    </div>
+</div>
 
 {% endblock %}

@@ -1,19 +1,45 @@
 {% extends 'base.html' %}
+{% load form_tags %}
 
 {% block content %}
 
-<h1>Registrar Becario</h1>
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="p-4">
+            <h1 class="text-center">Registrar Becario </h1>
+            <h3 class="text-center">CURP: {{ curp }}</h3>
 
-{% if error %}
-    <p>{{ error }}</p>
-{% endif %}
+            {% if error %}
+            <div class="alert alert-danger" role="alert">
+                {{ error }}
+            </div>
+            {% endif %}
 
-Con el curp: {{ curp }}
+            <form method="POST" action="{% url 'create_becario' curp=curp %}" enctype="multipart/form-data" class="mt-4">
+                {% csrf_token %}
 
-<form method="POST" action="{% url 'create_becario' curp=curp %}" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Registrar</button>
-</form>
+                <div class="row">
+                    <div class="col-md-6">
+                        <!-- Custom form fields for becario information -->
+                        <div class="mb-3">
+                            <label for="sexo" class="form-label">Sexo</label>
+                            {{ form.sexo|add_class:"form-control" }}
+                        </div>
+                        <div class="mb-3">
+                            <label for="fecha_nacimiento" class="form-label">Fecha de Nacimiento</label>
+                            {{ form.fecha_nacimiento|add_class:"form-control" }}
+                        </div>
+                        <div class="mb-3">
+                            <label for="acta_nacimiento" class="form-label">Acta de Nacimiento</label>
+                            {{ form.acta_nacimiento|add_class:"form-control" }}
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block">Registrar</button>
+            </form>
+        </div>
+    </div>
+</div>
 
 {% endblock %}

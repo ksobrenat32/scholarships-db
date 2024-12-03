@@ -1,19 +1,56 @@
 {% extends 'base.html' %}
+{% load form_tags %}
 
 {% block content %}
 
-<h1>Registrar Trabajador</h1>
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="p-4">
+            <h1 class="text-center">Registrar Trabajador</h1>
+            <h3 class="text-center">CURP: {{ curp }}</h3>
 
-{% if error %}
-    <p>{{ error }}</p>
-{% endif %}
+            {% if error %}
+            <div class="alert alert-danger" role="alert">
+                {{ error }}
+            </div>
+            {% endif %}
 
-Con el curp: {{ curp }}
+            <form method="POST" action="{% url 'create_trabajador' curp=curp %}" enctype="multipart/form-data" class="mt-4">
+                {% csrf_token %}
 
-<form method="POST" action="{% url 'create_trabajador' curp=curp %}" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Registrar</button>
-</form>
+                <div class="row">
+                    <div class="col-md-6">
+                        <!-- Custom form fields for trabajador information -->
+                        <div class="mb-3">
+                            <label for="telefono" class="form-label">Teléfono</label>
+                            {{ form.telefono|add_class:"form-control" }}
+                        </div>
+                        <div class="mb-3">
+                            <label for="correo" class="form-label">Correo</label>
+                            {{ form.correo|add_class:"form-control" }}
+                        </div>
+                        <div class="mb-3">
+                            <label for="seccion" class="form-label">Sección</label>
+                            {{ form.seccion|add_class:"form-control" }}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <!-- Custom form fields for other information -->
+                        <div class="mb-3">
+                            <label for="puesto" class="form-label">Puesto</label>
+                            {{ form.puesto|add_class:"form-control" }}
+                        </div>
+                        <div class="mb-3">
+                            <label for="lugar_adscripcion" class="form-label">Lugar de Adscripción</label>
+                            {{ form.lugar_adscripcion|add_class:"form-control" }}
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block">Registrar</button>
+            </form>
+        </div>
+    </div>
+</div>
 
 {% endblock %}
