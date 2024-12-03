@@ -11,7 +11,16 @@ WORKDIR /code
 # Create volumes for database and media files
 VOLUME ["/code/db", "/code/media"]
 
-# .sqlite3dependencies
+# Create a non-root user with UID 1000
+RUN adduser --disabled-password --gecos '' --uid 1000 appuser
+
+# Change ownership of the work directory
+RUN chown -R appuser /code
+
+# Switch to the non-root user
+USER appuser
+
+# Install dependencies
 COPY requirements.txt /code/
 RUN pip install --no-cache-dir -r requirements.txt
 
