@@ -26,8 +26,17 @@ SECRET_KEY = 'django-insecure-b&jvcm)n6bkv1!@c93m)op!-*p@#0j)y=$zr)(lrb$ktm5%sk6
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+# Get domain from environment variable
+ENV_PROTOCOL = os.getenv('PROTOCOL', 'http')
+ENV_DOMAIN = os.getenv('DOMAIN', '127.0.0.1')
+ENV_PORT = os.getenv('PORT', '8000')
 
+ALLOWED_HOSTS = [ENV_DOMAIN]
+# If a port is 80 or 443, it is not necessary to specify it
+if ENV_PORT not in ['80', '443']:
+    ALLOWED_HOSTS.append(ENV_DOMAIN + ':' + ENV_PORT)
+
+CSRF_TRUSTED_ORIGINS = [ENV_PROTOCOL + '://' + ENV_DOMAIN]
 
 # Application definition
 
