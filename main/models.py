@@ -1,11 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.core.exceptions import ValidationError
-
 
 # Create your models here.
-
-# Clases para el modelo de la base de datos
 
 # Clase para la seccion de trabajadores
 class Seccion(models.Model):
@@ -37,73 +33,61 @@ class Grado(models.Model):
     def __str__(self):
         return "{} - {}".format(self.clave, self.nombre)
 
-# Clase para el modelo de Usuario
-class Usuario(models.Model):
+# Clase para el modelo de Trabajador
+class Trabajador(models.Model):
+    usuario = models.OneToOneField(User, on_delete=models.CASCADE)
+
     nombre = models.CharField(max_length=128)
     apellido_paterno = models.CharField(max_length=128)
     apellido_materno = models.CharField(max_length=128, null=True, blank=True)
-    curp = models.CharField(max_length=18, unique=True)
     curp_archivo = models.FileField(upload_to='curp/')
-    es_trabajador = models.BooleanField(default=False)
-    es_becario = models.BooleanField(default=False)
 
-    def clean(self):
-        super().clean()
-        if self.es_trabajador == False and self.es_becario == False:
-            raise ValidationError("El usuario debe ser trabajador o becario o ambos")
-
-    def __str__(self):
-        return "{} {} {} {}".format(self.curp, self.nombre, self.apellido_paterno, self.apellido_materno)
-
-# Clase para el modelo de Trabajador, hereda de Usuario
-class Trabajador(models.Model):
-    usuario = models.OneToOneField(Usuario, on_delete=models.CASCADE)
     telefono = models.CharField(max_length=16)
     correo = models.EmailField()
-    seccion = models.ForeignKey(Seccion, on_delete=models.CASCADE)
-    puesto = models.ForeignKey(Puesto, on_delete=models.CASCADE)
-    lugar_adscripcion = models.ForeignKey(LugarAdscripcion, on_delete=models.CASCADE)
+
+    seccion = models.ForeignKey(Seccion, on_delete=models.PROTECT)
+    puesto = models.ForeignKey(Puesto, on_delete=models.PROTECT)
+    lugar_adscripcion = models.ForeignKey(LugarAdscripcion, on_delete=models.PROTECT)
 
     def __str__(self):
-        return "{}".format(self.usuario)
+        return "{}".format(self.usuario.username)
 
 # Clase para el modelo de Becario, hereda de Usuario
 class Becario(models.Model):
-    usuario = models.OneToOneField(Usuario, on_delete=models.CASCADE)
+    trabajador = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    nombre = models.CharField(max_length=128)
+    apellido_paterno = models.CharField(max_length=128)
+    apellido_materno = models.CharField(max_length=128, null=True, blank=True)
+    curp = models.CharField(max_length=18)
+    curp_archivo = models.FileField(upload_to='curp/')
+
     sexo = models.CharField(max_length=1)
     fecha_nacimiento = models.DateField()
     acta_nacimiento = models.FileField(upload_to='acta_nacimiento/')
 
     def __str__(self):
-        return "{}".format(self.usuario)
-
-# Clase para la relación trabajador-becario
-class TrabajadorBecario(models.Model):
-    trabajador = models.ForeignKey(Trabajador, on_delete=models.CASCADE)
-    becario = models.ForeignKey(Becario, on_delete=models.CASCADE)
-    fecha_ingreso = models.DateField(auto_now_add=True)
-    recibo_nomina = models.FileField(upload_to='recibo_nomina/')
-    ine = models.FileField(upload_to='ine/')
-
-    def __str__(self):
-        return "{} - {} - {}".format(self.trabajador, self.becario, self.anio)
+        return "{}".format(self.curp)
 
 # Clase para solicitud de beca
 class Solicitud(models.Model):
-    trabajador_becario = models.ForeignKey(TrabajadorBecario, on_delete=models.CASCADE)
+    becario = models.ForeignKey(Becario, on_delete=models.CASCADE)
+    fecha_solicitud = models.DateField(auto_now_add=True)
+    recibo_nomina = models.FileField(upload_to='recibo_nomina/')
+    ine = models.FileField(upload_to='ine/')
+
+# Clase para solicitud normal de beca
+class SolicitudNormal(Solicitud):
     grado = models.ForeignKey(Grado, on_delete=models.CASCADE)
-    tipo = models.CharField(max_length=1)
     promedio = models.FloatField()
     boleta = models.FileField(upload_to='boleta/')
     obtuvo_beca = models.BooleanField(default=False, null=True, blank=True)
-    usuario_responsable = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
-        return "{} - {} - {} - {}".format(self.trabajador_becario, self.grado, self.tipo, self.promedio)
+        return "{} - {} - {}".format(self.becario, self.fecha_solicitud, self.obtuvo_beca)
 
 # Clase para solicitud especial de beca
-class SolicitudEspecial(models.Model):
-    trabajador_becario = models.ForeignKey(TrabajadorBecario, on_delete=models.CASCADE)
+class SolicitudEspecial(Solicitud):
     diagnostico_medico = models.CharField(max_length=128)
     tipo_educacion = models.CharField(max_length=128)
     certificado_medico = models.FileField(upload_to='certificado_medico/')
@@ -111,4 +95,4 @@ class SolicitudEspecial(models.Model):
     obtuvo_beca = models.BooleanField(default=False, null=True, blank=True)
 
     def __str__(self):
-        return "{} - {} - {}".format(self.trabajador_becario, self.diagnostico_medico, self.tipo_educacion)
+        return "{} - {} - {}".format(self.becario, self.fecha_solicitud, self.obtuvo_beca)

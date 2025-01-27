@@ -25,8 +25,7 @@ urlpatterns = [
     path('signin/', views.signin, name='signin'),
     path('signout/', views.signout, name='signout'),
     path('becas/', views.becas, name='becas'),
-    path('becas/create_usuario/', views.create_usuario, name='create_usuario'),
-    path('becas/create_trabajador/<str:curp>/', views.create_trabajador, name='create_trabajador'),
-    path('becas/create_becario/<str:curp>/', views.create_becario, name='create_becario'),
+    path('becas/create_trabajador/', views.create_trabajador, name='create_trabajador'),
+    path('becas/create_becario/', views.create_becario, name='create_becario'),
     path('media/<path:file_path>/', views.download_file, name='download_file'),
 ]

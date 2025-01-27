@@ -21,7 +21,7 @@
             <a class="nav-link" href="{% url 'becas' %}">Becas</a>
             </li>
             <li class="nav-item">
-            <a class="nav-link" href="{% url 'create_usuario' %}">Registrar becario o trabajador</a>
+            <a class="nav-link" href="{% url 'create_becario' %}">Registrar becario</a>
             </li>
         </ul>
         {% endif %}
@@ -55,6 +55,9 @@
         // Email input validation in Spanish
         document.addEventListener('DOMContentLoaded', function() {
             var emailInput = document.getElementById('username');
+            if (!emailInput) {
+                return;
+            }
             emailInput.addEventListener('input', function() {
                 var email = emailInput.value;
                 var emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;

@@ -66,6 +66,10 @@ PNB "Nuevo becario"
 
 - ¿Actualizar registro? Si/No
 
+- Un solo trabajador por usuario. Muchos becarios por usuario.
+- Con cada solicitud pido los datos del becario para actualizar
+- Cada usuario solo puede registrar a sus becarios
+
 ### Excel
 
 - Entrada de becas aceptadas
