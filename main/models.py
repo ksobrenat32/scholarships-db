@@ -62,12 +62,16 @@ class Becario(models.Model):
     curp = models.CharField(max_length=18)
     curp_archivo = models.FileField(upload_to='curp/')
 
-    sexo = models.CharField(max_length=1)
-    fecha_nacimiento = models.DateField()
     acta_nacimiento = models.FileField(upload_to='acta_nacimiento/')
 
     def __str__(self):
         return "{}".format(self.curp)
+
+    def get_sexo(self) -> str:
+        return self.curp[10]
+
+    def get_fecha_nacimiento(self) -> str:
+        return "{}-{}-{}".format(self.curp[4:8], self.curp[8:10], self.curp[6:8])
 
 # Clase para solicitud de beca
 class Solicitud(models.Model):

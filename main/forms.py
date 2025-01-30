@@ -13,8 +13,4 @@ class TrabajadorCreateForm(ModelForm):
 class BecarioCreateForm(ModelForm):
     class Meta:
         model = Becario
-        fields = ['nombre', 'apellido_paterno', 'apellido_materno', 'curp', 'curp_archivo', 'sexo', 'fecha_nacimiento', 'acta_nacimiento']
-        widgets = {
-            'sexo': forms.Select(choices=[('H', 'Hombre'), ('M', 'Mujer')]),
-            'fecha_nacimiento': forms.DateInput(attrs={'type': 'date'}),
-        }
+        fields = ['nombre', 'apellido_paterno', 'apellido_materno', 'curp', 'curp_archivo', 'acta_nacimiento']
