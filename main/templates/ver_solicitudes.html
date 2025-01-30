@@ -18,7 +18,7 @@
                 <td>{{ solicitud.becario }}</td>
                 <td>{{ solicitud.get_tipo_display }}</td>
                 <td>{{ solicitud.fecha_solicitud }}</td>
-                <td>{{ solicitud.obtuvo_beca|yesno:"Aprobada,Rechazada" }}</td>
+                <td>{{ solicitud.get_estado_display }}</td>
             </tr>
             {% endfor %}
             {% for solicitud in solicitudes_especiales %}
@@ -26,7 +26,7 @@
                 <td>{{ solicitud.becario }}</td>
                 <td>Educación Especial</td>
                 <td>{{ solicitud.fecha_solicitud }}</td>
-                <td>{{ solicitud.obtuvo_beca|yesno:"Aprobada,Rechazada" }}</td>
+                <td>{{ solicitud.get_estado_display }}</td>
             </tr>
             {% endfor %}
         </tbody>

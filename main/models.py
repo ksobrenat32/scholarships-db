@@ -82,7 +82,12 @@ class Solicitud(models.Model):
     recibo_nomina = models.FileField(upload_to='recibo_nomina/')
     # Of the Trabajador
     ine = models.FileField(upload_to='ine/')
-    obtuvo_beca = models.BooleanField(default=False)
+    ESTADO_CHOICES = [
+        ('A', 'Aprobada'),
+        ('R', 'Rechazada'),
+        ('P', 'En progreso'),
+    ]
+    estado = models.CharField(max_length=1, choices=ESTADO_CHOICES, default='P')
 
 # Clase para solicitud normal de beca
 class SolicitudNormal(Solicitud):
@@ -97,7 +102,7 @@ class SolicitudNormal(Solicitud):
     tipo = models.CharField(max_length=1, choices=TIPO_CHOICES, default='A')
 
     def __str__(self):
-        return "{} - {} - {}".format(self.becario, self.fecha_solicitud, self.obtuvo_beca)
+        return "{} - {} - {}".format(self.becario, self.fecha_solicitud, self.estado)
 
 # Clase para solicitud especial de beca
 class SolicitudEspecial(Solicitud):
@@ -107,4 +112,4 @@ class SolicitudEspecial(Solicitud):
     certificado_escolar = models.FileField(upload_to='certificado_escolar/')
 
     def __str__(self):
-        return "{} - {} - {}".format(self.becario, self.fecha_solicitud, self.obtuvo_beca)
+        return "{} - {} - {}".format(self.becario, self.fecha_solicitud, self.estado)

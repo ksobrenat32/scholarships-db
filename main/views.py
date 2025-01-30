@@ -171,6 +171,7 @@ def create_solicitud_normal(request):
         if form.is_valid():
             solicitud = form.save(commit=False)
             solicitud.becario = form.cleaned_data['becario']
+            solicitud.estado = 'P'  # Set default estado to 'En progreso'
             solicitud.save()
             return redirect('becas')
         else:
@@ -188,6 +189,7 @@ def create_solicitud_especial(request):
         if form.is_valid():
             solicitud = form.save(commit=False)
             solicitud.becario = form.cleaned_data['becario']
+            solicitud.estado = 'P'  # Set default estado to 'En progreso'
             solicitud.save()
             return redirect('becas')
         else:
