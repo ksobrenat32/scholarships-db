@@ -8,8 +8,21 @@ admin.site.register(Seccion)
 admin.site.register(Puesto)
 admin.site.register(LugarAdscripcion)
 admin.site.register(Grado)
-admin.site.register(Trabajador)
-admin.site.register(Becario)
+
+class TrabajadorAdmin(admin.ModelAdmin):
+    search_fields = ['usuario__username']  # Search by username of linked user
+
+class BecarioAdmin(admin.ModelAdmin):
+    search_fields = ['curp']  # Search by curp
+
+class SolicitudNormalAdmin(admin.ModelAdmin):
+    search_fields = ['becario__curp', 'fecha_solicitud']  # Search by becario or fecha_solicitud
+
+class SolicitudEspecialAdmin(admin.ModelAdmin):
+    search_fields = ['becario__curp', 'fecha_solicitud']  # Search by becario or fecha_solicitud
+
+admin.site.register(Trabajador, TrabajadorAdmin)
+admin.site.register(Becario, BecarioAdmin)
 admin.site.register(Solicitud)
-admin.site.register(SolicitudNormal)
-admin.site.register(SolicitudEspecial)
+admin.site.register(SolicitudNormal, SolicitudNormalAdmin)
+admin.site.register(SolicitudEspecial, SolicitudEspecialAdmin)
