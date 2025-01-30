@@ -195,7 +195,6 @@ def create_solicitud_especial(request):
 
 # File download view
 @login_required
-@trabajador_required
 def download_file(request, file_path):
     if not request.user.is_staff:
         return HttpResponseForbidden("You do not have permission to access this file.")
@@ -205,4 +204,15 @@ def download_file(request, file_path):
         return FileResponse(open(file_full_path, 'rb'))
     else:
         return HttpResponseForbidden("File not found.")
+
+# View to see solicitudes
+@login_required
+@trabajador_required
+def ver_solicitudes(request):
+    solicitudes_normales = SolicitudNormal.objects.filter(becario__trabajador=request.user)
+    solicitudes_especiales = SolicitudEspecial.objects.filter(becario__trabajador=request.user)
+    return render(request, 'ver_solicitudes.html', {
+        'solicitudes_normales': solicitudes_normales,
+        'solicitudes_especiales': solicitudes_especiales
+    })
 
