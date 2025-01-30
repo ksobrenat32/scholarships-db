@@ -17,12 +17,12 @@
             <form action="/signin/" method="post" class="mt-4">
                 {% csrf_token %}
 
-                <div class="mb-3">
-                    <label for="username" class="form-label">Correo electrónico</label>
+                <div class="mb-1">
+                    <label for="username" class="form-label">CURP del trabajador</label>
                     {{ form.username|add_class:"form-control" }}
                 </div>
 
-                <div class="mb-3">
+                <div class="mb-1">
                     <label for="password" class="form-label">Contraseña</label>
                     {{ form.password|add_class:"form-control" }}
                 </div>
