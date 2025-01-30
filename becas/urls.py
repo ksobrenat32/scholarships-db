@@ -27,5 +27,7 @@ urlpatterns = [
     path('becas/', views.becas, name='becas'),
     path('becas/create_trabajador/', views.create_trabajador, name='create_trabajador'),
     path('becas/create_becario/', views.create_becario, name='create_becario'),
+    path('becas/create_solicitud/', views.create_solicitud_normal, name='create_solicitud_normal'),
+    path('becas/create_solicitud_especial/', views.create_solicitud_especial, name='create_solicitud_especial'),
     path('media/<path:file_path>/', views.download_file, name='download_file'),
 ]

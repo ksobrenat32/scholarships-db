@@ -23,6 +23,15 @@
             <li class="nav-item">
             <a class="nav-link" href="{% url 'create_becario' %}">Registrar becario</a>
             </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Registrar Solicitud
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <li><a class="dropdown-item" href="{% url 'create_solicitud_normal' %}">Aprovechamiento/Excelencia</a></li>
+                    <li><a class="dropdown-item" href="{% url 'create_solicitud_especial' %}">Educación Especial</a></li>
+                </ul>
+            </li>
         </ul>
         {% endif %}
         <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
@@ -137,6 +146,18 @@
                             apellidoMaternoInput.setCustomValidity('El apellido materno solo debe contener letras, espacios y acentos.');
                         } else {
                             apellidoMaternoInput.setCustomValidity('');
+                        }
+                    });
+                }
+
+                const promedioInput = form.querySelector('input[name="promedio"]');
+                if (promedioInput) {
+                    promedioInput.addEventListener('input', function() {
+                        const promedio = parseFloat(promedioInput.value);
+                        if (promedio < 6.0 || promedio > 10.0) {
+                            promedioInput.setCustomValidity('El promedio debe estar entre 6.0 y 10.0');
+                        } else {
+                            promedioInput.setCustomValidity('');
                         }
                     });
                 }

@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% load form_tags %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="p-4">
+            <h1 class="text-center">Registrar Solicitud Especial</h1>
+
+            {% if error %}
+            <div class="alert alert-danger" role="alert">
+                {{ error }}
+            </div>
+            {% endif %}
+
+            <form method="POST" action="{% url 'create_solicitud_especial' %}" enctype="multipart/form-data" class="mt-4" id="solicitudEspecialForm">
+                {% csrf_token %}
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-1">
+                            <label for="becario" class="form-label">Becario</label>
+                            {{ form.becario|add_class:"form-control" }}
+                        </div>
+                        <div class="mb-1">
+                            <label for="diagnostico_medico" class="form-label">Diagnóstico Médico</label>
+                            {{ form.diagnostico_medico|add_class:"form-control" }}
+                        </div>
+                        <div class="mb-1">
+                            <label for="tipo_educacion" class="form-label">Tipo de Educación</label>
+                            {{ form.tipo_educacion|add_class:"form-control" }}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-1">
+                            <label for="certificado_medico" class="form-label">Certificado Médico</label>
+                            {{ form.certificado_medico|add_class:"form-control" }}
+                        </div>
+                        <div class="mb-1">
+                            <label for="certificado_escolar" class="form-label">Certificado Escolar</label>
+                            {{ form.certificado_escolar|add_class:"form-control" }}
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block">Registrar</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

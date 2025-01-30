@@ -76,16 +76,25 @@ class Becario(models.Model):
 # Clase para solicitud de beca
 class Solicitud(models.Model):
     becario = models.ForeignKey(Becario, on_delete=models.CASCADE)
+    # Added automatically
     fecha_solicitud = models.DateField(auto_now_add=True)
+    # Of the Trabajador
     recibo_nomina = models.FileField(upload_to='recibo_nomina/')
+    # Of the Trabajador
     ine = models.FileField(upload_to='ine/')
+    obtuvo_beca = models.BooleanField(default=False)
 
 # Clase para solicitud normal de beca
 class SolicitudNormal(Solicitud):
+    TIPO_CHOICES = [
+        ('A', 'Aprovechamiento'),
+        ('E', 'Excelencia'),
+    ]
     grado = models.ForeignKey(Grado, on_delete=models.CASCADE)
+    # From 6 to 10
     promedio = models.FloatField()
     boleta = models.FileField(upload_to='boleta/')
-    obtuvo_beca = models.BooleanField(default=False, null=True, blank=True)
+    tipo = models.CharField(max_length=1, choices=TIPO_CHOICES, default='A')
 
     def __str__(self):
         return "{} - {} - {}".format(self.becario, self.fecha_solicitud, self.obtuvo_beca)
@@ -96,7 +105,6 @@ class SolicitudEspecial(Solicitud):
     tipo_educacion = models.CharField(max_length=128)
     certificado_medico = models.FileField(upload_to='certificado_medico/')
     certificado_escolar = models.FileField(upload_to='certificado_escolar/')
-    obtuvo_beca = models.BooleanField(default=False, null=True, blank=True)
 
     def __str__(self):
         return "{} - {} - {}".format(self.becario, self.fecha_solicitud, self.obtuvo_beca)

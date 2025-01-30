@@ -4,8 +4,8 @@ from django.contrib.auth.models import User
 from django.contrib.auth import login, logout, authenticate
 from django.db import IntegrityError
 from django.contrib.auth.decorators import login_required
-from main.forms import TrabajadorCreateForm, BecarioCreateForm
-from main.models import Trabajador
+from main.forms import TrabajadorCreateForm, BecarioCreateForm, SolicitudNormalCreateForm, SolicitudEspecialCreateForm
+from main.models import Trabajador, Becario, SolicitudNormal, SolicitudEspecial
 from django.http import HttpResponseForbidden, FileResponse
 from django.conf import settings
 import os
@@ -158,6 +158,40 @@ def create_becario(request):
                 'form': BecarioCreateForm(),
                 'error': 'Error al crear el becario'
             })
+
+# Create_SolicitudNormal view
+@login_required
+@trabajador_required
+def create_solicitud_normal(request):
+    if request.method == 'GET':
+        form = SolicitudNormalCreateForm(user=request.user)
+        return render(request, 'create_solicitud_normal.html', {'form': form})
+    elif request.method == 'POST':
+        form = SolicitudNormalCreateForm(request.POST, request.FILES, user=request.user)
+        if form.is_valid():
+            solicitud = form.save(commit=False)
+            solicitud.becario = form.cleaned_data['becario']
+            solicitud.save()
+            return redirect('becas')
+        else:
+            return render(request, 'create_solicitud_normal.html', {'form': form, 'error': 'Error en la solicitud'})
+
+# Create_SolicitudEspecial view
+@login_required
+@trabajador_required
+def create_solicitud_especial(request):
+    if request.method == 'GET':
+        form = SolicitudEspecialCreateForm(user=request.user)
+        return render(request, 'create_solicitud_especial.html', {'form': form})
+    elif request.method == 'POST':
+        form = SolicitudEspecialCreateForm(request.POST, request.FILES, user=request.user)
+        if form.is_valid():
+            solicitud = form.save(commit=False)
+            solicitud.becario = form.cleaned_data['becario']
+            solicitud.save()
+            return redirect('becas')
+        else:
+            return render(request, 'create_solicitud_especial.html', {'form': form, 'error': 'Error en la solicitud'})
 
 # File download view
 @login_required

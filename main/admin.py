@@ -23,6 +23,5 @@ class SolicitudEspecialAdmin(admin.ModelAdmin):
 
 admin.site.register(Trabajador, TrabajadorAdmin)
 admin.site.register(Becario, BecarioAdmin)
-admin.site.register(Solicitud)
 admin.site.register(SolicitudNormal, SolicitudNormalAdmin)
 admin.site.register(SolicitudEspecial, SolicitudEspecialAdmin)
