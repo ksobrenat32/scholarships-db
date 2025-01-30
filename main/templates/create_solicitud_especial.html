@@ -23,13 +23,20 @@
                             <label for="becario" class="form-label">Becario</label>
                             {{ form.becario|add_class:"form-control" }}
                         </div>
+
                         <div class="mb-1">
                             <label for="diagnostico_medico" class="form-label">Diagnóstico Médico</label>
                             {{ form.diagnostico_medico|add_class:"form-control" }}
                         </div>
+
                         <div class="mb-1">
-                            <label for="tipo_educacion" class="form-label">Tipo de Educación</label>
-                            {{ form.tipo_educacion|add_class:"form-control" }}
+                            <label for="ine" class="form-label">INE del trabajador</label>
+                            {{ form.ine|add_class:"form-control" }}
+                        </div>
+
+                        <div class="mb-1">
+                            <label for="recibo_nomina" class="form-label">Último recibo de Nómina</label>
+                            {{ form.recibo_nomina|add_class:"form-control" }}
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -38,13 +45,19 @@
                             {{ form.certificado_medico|add_class:"form-control" }}
                         </div>
                         <div class="mb-1">
+                            <label for="tipo_educacion" class="form-label">Tipo de Educación</label>
+                            {{ form.tipo_educacion|add_class:"form-control" }}
+                        </div>
+                        <div class="mb-1">
                             <label for="certificado_escolar" class="form-label">Certificado Escolar</label>
                             {{ form.certificado_escolar|add_class:"form-control" }}
                         </div>
+                        <div class="mb-1 text-center">
+                            <br>
+                            <button type="submit" class="btn btn-primary">Enviar</button>
+                        </div>
                     </div>
                 </div>
-
-                <button type="submit" class="btn btn-primary btn-block">Registrar</button>
             </form>
         </div>
     </div>

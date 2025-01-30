@@ -24,12 +24,16 @@
                             {{ form.becario|add_class:"form-control" }}
                         </div>
                         <div class="mb-1">
-                            <label for="grado" class="form-label">Grado</label>
-                            {{ form.grado|add_class:"form-control" }}
+                            <label for="ine" class="form-label">INE del trabajador</label>
+                            {{ form.ine|add_class:"form-control" }}
                         </div>
                         <div class="mb-1">
-                            <label for="promedio" class="form-label">Promedio</label>
-                            {{ form.promedio|add_class:"form-control" }}
+                            <label for="recibo_nomina" class="form-label">Último recibo de Nómina</label>
+                            {{ form.recibo_nomina|add_class:"form-control" }}
+                        </div>
+                        <div class="mb-1">
+                            <label for="tipo" class="form-label">Tipo</label>
+                            {{ form.tipo|add_class:"form-control" }}
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -38,13 +42,19 @@
                             {{ form.boleta|add_class:"form-control" }}
                         </div>
                         <div class="mb-1">
-                            <label for="tipo" class="form-label">Tipo</label>
-                            {{ form.tipo|add_class:"form-control" }}
+                            <label for="grado" class="form-label">Grado</label>
+                            {{ form.grado|add_class:"form-control" }}
+                        </div>
+                        <div class="mb-1">
+                            <label for="promedio" class="form-label">Promedio</label>
+                            {{ form.promedio|add_class:"form-control" }}
+                        </div>
+                        <div class="mb-1 text-center">
+                            <br>
+                            <button type="submit" class="btn btn-primary">Enviar</button>
                         </div>
                     </div>
                 </div>
-
-                <button type="submit" class="btn btn-primary btn-block">Registrar</button>
             </form>
         </div>
     </div>

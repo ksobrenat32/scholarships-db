@@ -20,7 +20,7 @@ class SolicitudNormalCreateForm(forms.ModelForm):
 
     class Meta:
         model = SolicitudNormal
-        fields = ['becario', 'grado', 'promedio', 'boleta', 'tipo']
+        fields = ['becario', 'grado', 'promedio', 'boleta', 'tipo', 'recibo_nomina', 'ine']
         widgets = {
             'tipo': forms.Select(choices=SolicitudNormal.TIPO_CHOICES),
         }
@@ -41,7 +41,7 @@ class SolicitudEspecialCreateForm(forms.ModelForm):
 
     class Meta:
         model = SolicitudEspecial
-        fields = ['becario', 'diagnostico_medico', 'tipo_educacion', 'certificado_medico', 'certificado_escolar']
+        fields = ['becario', 'diagnostico_medico', 'tipo_educacion', 'certificado_medico', 'certificado_escolar', 'recibo_nomina', 'ine']
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user')
