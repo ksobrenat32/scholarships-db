@@ -14,7 +14,7 @@
             </div>
             {% endif %}
 
-            <form method="POST" action="{% url 'create_trabajador' %}" enctype="multipart/form-data" class="mt-4">
+            <form method="POST" action="{% url 'create_trabajador' %}" enctype="multipart/form-data" class="mt-4" id="trabajadorForm">
                 {% csrf_token %}
 
                 <!-- General user information -->

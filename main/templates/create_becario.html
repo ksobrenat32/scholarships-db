@@ -14,7 +14,7 @@
             </div>
             {% endif %}
 
-            <form method="POST" action="{% url 'create_becario' %}" enctype="multipart/form-data" class="mt-4">
+            <form method="POST" action="{% url 'create_becario' %}" enctype="multipart/form-data" class="mt-4" id="becarioForm">
                 {% csrf_token %}
 
                 <!-- General user information -->
@@ -58,3 +58,28 @@
 </div>
 
 {% endblock %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('becarioForm');
+        const telefonoInput = form.querySelector('input[name="telefono"]');
+        const correoInput = form.querySelector('input[name="correo"]');
+
+        telefonoInput.addEventListener('input', function() {
+            const telefonoRegex = /^\d{10}$/;
+            if (!telefonoRegex.test(telefonoInput.value)) {
+                telefonoInput.setCustomValidity('Formato de teléfono inválido. Debe contener 10 dígitos.');
+            } else {
+                telefonoInput.setCustomValidity('');
+            }
+        });
+
+        correoInput.addEventListener('input', function() {
+            const correoRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!correoRegex.test(correoInput.value)) {
+                correoInput.setCustomValidity('Formato de correo inválido.');
+            } else {
+                correoInput.setCustomValidity('');
+            }
+        });
+    });
+</script>

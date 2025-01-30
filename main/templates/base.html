@@ -57,6 +57,21 @@
             return curpRegex.test(curp);
         }
 
+        function validateTelefono(telefono) {
+            const telefonoRegex = /^\d{10}$/;
+            return telefonoRegex.test(telefono);
+        }
+
+        function validateCorreo(correo) {
+            const correoRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return correoRegex.test(correo);
+        }
+
+        function validateNombre(nombre) {
+            const nombreRegex = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/;
+            return nombreRegex.test(nombre);
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             const forms = document.querySelectorAll('form');
             forms.forEach(form => {
@@ -67,6 +82,61 @@
                             curpInput.setCustomValidity('Formato de CURP inválido.');
                         } else {
                             curpInput.setCustomValidity('');
+                        }
+                    });
+                }
+
+                const telefonoInput = form.querySelector('input[name="telefono"]');
+                if (telefonoInput) {
+                    telefonoInput.addEventListener('input', function() {
+                        if (!validateTelefono(telefonoInput.value)) {
+                            telefonoInput.setCustomValidity('Formato de teléfono inválido. Debe contener 10 dígitos.');
+                        } else {
+                            telefonoInput.setCustomValidity('');
+                        }
+                    });
+                }
+
+                const correoInput = form.querySelector('input[name="correo"]');
+                if (correoInput) {
+                    correoInput.addEventListener('input', function() {
+                        if (!validateCorreo(correoInput.value)) {
+                            correoInput.setCustomValidity('Formato de correo inválido.');
+                        } else {
+                            correoInput.setCustomValidity('');
+                        }
+                    });
+                }
+
+                const nombreInput = form.querySelector('input[name="nombre"]');
+                if (nombreInput) {
+                    nombreInput.addEventListener('input', function() {
+                        if (!validateNombre(nombreInput.value)) {
+                            nombreInput.setCustomValidity('El nombre solo debe contener letras, espacios y acentos.');
+                        } else {
+                            nombreInput.setCustomValidity('');
+                        }
+                    });
+                }
+
+                const apellidoPaternoInput = form.querySelector('input[name="apellido_paterno"]');
+                if (apellidoPaternoInput) {
+                    apellidoPaternoInput.addEventListener('input', function() {
+                        if (!validateNombre(apellidoPaternoInput.value)) {
+                            apellidoPaternoInput.setCustomValidity('El apellido paterno solo debe contener letras, espacios y acentos.');
+                        } else {
+                            apellidoPaternoInput.setCustomValidity('');
+                        }
+                    });
+                }
+
+                const apellidoMaternoInput = form.querySelector('input[name="apellido_materno"]');
+                if (apellidoMaternoInput) {
+                    apellidoMaternoInput.addEventListener('input', function() {
+                        if (!validateNombre(apellidoMaternoInput.value)) {
+                            apellidoMaternoInput.setCustomValidity('El apellido materno solo debe contener letras, espacios y acentos.');
+                        } else {
+                            apellidoMaternoInput.setCustomValidity('');
                         }
                     });
                 }
