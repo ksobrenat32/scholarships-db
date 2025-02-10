@@ -8,9 +8,14 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/2.2.1/js/dataTables.min.js">
 </head>
 <body>
+    {% load static %}
 
     <nav class="navbar navbar-expand-lg bg-dark navbar-dark">
     <div class="container">
+        <image src="{% static 'images/logo_sntsa.png' %}" alt="Logo" style="height: 50px;">
+        <div style="width: 10px;"></div>
+
+
         <a class="navbar-brand" href="{% url 'home' %}">Becas SNTSA</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
