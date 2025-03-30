@@ -31,6 +31,12 @@ docker exec -it scholarships-db python manage.py createsuperuser
 
 5. Acceder a la interfaz de administrador en `http://localhost:8000/admin`
 
+6. Crear información de prueba
+
+```bash
+docker exec -it scholarships-db python manage.py generate_users
+```
+
 ## Reglas de negocio
 
 ### Registro
