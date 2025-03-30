@@ -42,7 +42,7 @@ class Trabajador(models.Model):
     apellido_materno = models.CharField(max_length=128, null=True, blank=True)
     curp_archivo = models.FileField(upload_to='curp/')
 
-    telefono = models.CharField(max_length=16)
+    telefono = models.CharField(max_length=10)
     correo = models.EmailField()
 
     seccion = models.ForeignKey(Seccion, on_delete=models.PROTECT)
@@ -83,11 +83,13 @@ class Solicitud(models.Model):
     # Of the Trabajador
     ine = models.FileField(upload_to='ine/')
     ESTADO_CHOICES = [
-        ('A', 'Aprobada'),
-        ('R', 'Rechazada'),
-        ('P', 'En progreso'),
+        ('W', 'Solicitud recibida'),
+        ('E', 'Error en documentos, revisar notas'),
+        ('T', 'Beca otorgada'),
+        ('F', 'Beca no otorgada'),
     ]
     estado = models.CharField(max_length=1, choices=ESTADO_CHOICES, default='P')
+    notas = models.TextField(null=True, blank=True)
 
 # Clase para solicitud normal de beca
 class SolicitudNormal(Solicitud):

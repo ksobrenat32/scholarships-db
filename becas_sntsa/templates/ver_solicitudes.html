@@ -10,6 +10,7 @@
                 <th>Tipo</th>
                 <th>Fecha de registro</th>
                 <th>Estado</th>
+                <th>Notas</th>
             </tr>
         </thead>
         <tbody>
@@ -19,6 +20,7 @@
                 <td>{{ solicitud.get_tipo_display }}</td>
                 <td>{{ solicitud.fecha_solicitud }}</td>
                 <td>{{ solicitud.get_estado_display }}</td>
+                <td>{{ solicitud.notas }}</td>
             </tr>
             {% endfor %}
             {% for solicitud in solicitudes_especiales %}
@@ -27,6 +29,7 @@
                 <td>Educación Especial</td>
                 <td>{{ solicitud.fecha_solicitud }}</td>
                 <td>{{ solicitud.get_estado_display }}</td>
+                <td>{{ solicitud.notas }}</td>
             </tr>
             {% endfor %}
         </tbody>
