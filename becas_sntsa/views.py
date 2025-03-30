@@ -207,6 +207,13 @@ def download_file(request, file_path):
     else:
         return HttpResponseForbidden("File not found.")
 
+# View to see becarios
+@login_required
+@trabajador_required
+def ver_becarios(request):
+    becarios = Becario.objects.filter(trabajador=request.user)
+    return render(request, 'ver_becarios.html', {'becarios': becarios})
+
 # View to see solicitudes
 @login_required
 @trabajador_required

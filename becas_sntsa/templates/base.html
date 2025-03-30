@@ -24,10 +24,13 @@
         {% if user.is_authenticated %}
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li class="nav-item">
-            <a class="nav-link" href="{% url 'becas' %}">Becas</a>
+                <a class="nav-link" href="{% url 'becas' %}">Becas</a>
             </li>
             <li class="nav-item">
-            <a class="nav-link" href="{% url 'create_becario' %}">Registrar becario</a>
+                <a class="nav-link" href="{% url 'create_becario' %}">Registrar becario</a>
+            </li>
+            <li class="nav-item">
+            <a class="nav-link" href="{% url 'ver_becarios' %}">Mis Becarios</a>
             </li>
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -38,7 +41,9 @@
                     <li><a class="dropdown-item" href="{% url 'create_solicitud_especial' %}">Educación Especial</a></li>
                 </ul>
             </li>
+            <li class="nav-item">
             <a class="nav-link" href="{% url 'ver_solicitudes' %}">Mis Solicitudes</a>
+            </li>
         </ul>
         {% endif %}
         <ul class="navbar-nav ms-auto mb-2 mb-lg-0">

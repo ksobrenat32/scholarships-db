@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center">Lista de Becarios</h1>
+    <table id="becariosTable" class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>CURP</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for becario in becarios %}
+            <tr>
+                <td>{{ becario.nombre }} {{ becario.apellido_paterno }} {{ becario.apellido_materno }}</td>
+                <td>{{ becario.curp }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#becariosTable').DataTable();
+    });
+</script>
+{% endblock %}
