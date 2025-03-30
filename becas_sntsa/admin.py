@@ -1,5 +1,5 @@
 from django.contrib import admin
-from main.models import Seccion, Puesto, LugarAdscripcion, Grado, Trabajador, Becario, Solicitud, SolicitudNormal, SolicitudEspecial
+from becas_sntsa.models import Seccion, Puesto, LugarAdscripcion, Grado, Trabajador, Becario, Solicitud, SolicitudNormal, SolicitudEspecial
 
 # Register your models here.
 

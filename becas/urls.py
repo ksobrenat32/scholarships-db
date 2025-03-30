@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from main import views
+from becas_sntsa import views
 
 urlpatterns = [
     path('', views.home, name='home'),

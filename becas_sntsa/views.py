@@ -4,8 +4,8 @@ from django.contrib.auth.models import User
 from django.contrib.auth import login, logout, authenticate
 from django.db import IntegrityError
 from django.contrib.auth.decorators import login_required
-from main.forms import TrabajadorCreateForm, BecarioCreateForm, SolicitudNormalCreateForm, SolicitudEspecialCreateForm
-from main.models import Trabajador, Becario, SolicitudNormal, SolicitudEspecial
+from becas_sntsa.forms import TrabajadorCreateForm, BecarioCreateForm, SolicitudNormalCreateForm, SolicitudEspecialCreateForm
+from becas_sntsa.models import Trabajador, Becario, SolicitudNormal, SolicitudEspecial
 from django.http import HttpResponseForbidden, FileResponse
 from django.conf import settings
 import os

@@ -1,6 +1,6 @@
 from django import forms
 from django.forms import ModelForm
-from main.models import Trabajador, Becario, SolicitudNormal, SolicitudEspecial
+from becas_sntsa.models import Trabajador, Becario, SolicitudNormal, SolicitudEspecial
 
 class TrabajadorCreateForm(ModelForm):
     class Meta:
