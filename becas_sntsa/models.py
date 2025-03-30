@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 # Create your models here.
 
@@ -77,7 +78,7 @@ class Becario(models.Model):
 class Solicitud(models.Model):
     becario = models.ForeignKey(Becario, on_delete=models.CASCADE)
     # Added automatically
-    fecha_solicitud = models.DateField(auto_now_add=True)
+    fecha_solicitud = models.DateField(default=timezone.now)
     # Of the Trabajador
     recibo_nomina = models.FileField(upload_to='recibo_nomina/')
     # Of the Trabajador
