@@ -18,6 +18,13 @@ class Puesto(models.Model):
     def __str__(self):
         return self.clave
 
+# Clase para la jurisdiccion de los trabajadores
+class Jurisdiccion(models.Model):
+    clave = models.CharField(max_length=4)
+
+    def __str__(self):
+        return self.clave
+
 # Clase para el lugar de adscripcion de los trabajadores
 class LugarAdscripcion(models.Model):
     alias = models.CharField(max_length=32, null=True, blank=True)
@@ -48,6 +55,7 @@ class Trabajador(models.Model):
 
     seccion = models.ForeignKey(Seccion, on_delete=models.PROTECT)
     puesto = models.ForeignKey(Puesto, on_delete=models.PROTECT)
+    jurisdiccion = models.ForeignKey(Jurisdiccion, on_delete=models.PROTECT)
     lugar_adscripcion = models.ForeignKey(LugarAdscripcion, on_delete=models.PROTECT)
 
     def __str__(self):

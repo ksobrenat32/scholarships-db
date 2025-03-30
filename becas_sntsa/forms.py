@@ -5,7 +5,7 @@ from becas_sntsa.models import Trabajador, Becario, SolicitudNormal, SolicitudEs
 class TrabajadorCreateForm(ModelForm):
     class Meta:
         model = Trabajador
-        fields = ['nombre', 'apellido_paterno', 'apellido_materno', 'curp_archivo', 'telefono', 'correo', 'seccion', 'puesto', 'lugar_adscripcion']
+        fields = ['nombre', 'apellido_paterno', 'apellido_materno', 'curp_archivo', 'telefono', 'correo', 'seccion', 'puesto', 'jurisdiccion', 'lugar_adscripcion']
         widgets = {
             'correo': forms.EmailInput(),
         }

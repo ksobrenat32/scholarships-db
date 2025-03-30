@@ -31,5 +31,13 @@
     {"model": "becas_sntsa.seccion", "pk": 3, "fields": {"numero": 3}},
     {"model": "becas_sntsa.seccion", "pk": 4, "fields": {"numero": 4}},
     {"model": "becas_sntsa.seccion", "pk": 5, "fields": {"numero": 5}},
-    {"model": "becas_sntsa.seccion", "pk": 6, "fields": {"numero": 37}}
+    {"model": "becas_sntsa.seccion", "pk": 6, "fields": {"numero": 37}},
+    {"model": "becas_sntsa.jurisdiccion", "pk": 1, "fields": {"clave": "I"}},
+    {"model": "becas_sntsa.jurisdiccion", "pk": 2, "fields": {"clave": "II"}},
+    {"model": "becas_sntsa.jurisdiccion", "pk": 3, "fields": {"clave": "III"}},
+    {"model": "becas_sntsa.jurisdiccion", "pk": 4, "fields": {"clave": "IV"}},
+    {"model": "becas_sntsa.jurisdiccion", "pk": 5, "fields": {"clave": "V"}},
+    {"model": "becas_sntsa.jurisdiccion", "pk": 6, "fields": {"clave": "VI"}},
+    {"model": "becas_sntsa.jurisdiccion", "pk": 7, "fields": {"clave": "VII"}},
+    {"model": "becas_sntsa.jurisdiccion", "pk": 8, "fields": {"clave": "VIII"}}
 ]

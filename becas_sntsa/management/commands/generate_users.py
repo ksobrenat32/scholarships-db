@@ -2,7 +2,7 @@
 from django.core.management.base import BaseCommand
 import random
 from faker import Faker
-from becas_sntsa.models import User, Trabajador, Becario, Solicitud, Seccion, Puesto, LugarAdscripcion, Grado, SolicitudNormal, SolicitudEspecial
+from becas_sntsa.models import User, Trabajador, Becario, Solicitud, Seccion, Puesto, Jurisdiccion, LugarAdscripcion, Grado, SolicitudNormal, SolicitudEspecial
 
 # Generate mexican CURP
 def generate_curp(nombre, apellido_paterno, apellido_materno):
@@ -67,6 +67,10 @@ def create_trabajador() -> User:
     lugares = LugarAdscripcion.objects.all()
     lugar_adscripcion = random.choice(lugares)
 
+    # Get all jurisdictions
+    jurisdicciones = Jurisdiccion.objects.all()
+    jurisdiccion = random.choice(jurisdicciones)
+
     # Create the user
     user = User.objects.create_user(
         username=curp,
@@ -84,6 +88,7 @@ def create_trabajador() -> User:
         correo=correo,
         seccion=seccion,
         puesto=puesto,
+        jurisdiccion=jurisdiccion,
         lugar_adscripcion=lugar_adscripcion
     )
 
