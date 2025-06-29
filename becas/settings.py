@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 import os
+import yaml
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -20,18 +21,25 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
+# Load the security key from a YAML file
+config_path = os.path.join(BASE_DIR, 'config.yaml')
+if os.path.exists(config_path):
+    with open(config_path, 'r') as config_file:
+        config = yaml.safe_load(config_file)
+
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-b&jvcm)n6bkv1!@c93m)op!-*p@#0j)y=$zr)(lrb$ktm5%sk6'
+SECRET_KEY = config.get('SECURITY_KEY', 'change-me-to-a-secure-key')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config.get('DEBUG', 'False')
 
-# Get domain from environment variable
-ENV_PROTOCOL = os.getenv('PROTOCOL', 'http')
-ENV_DOMAIN = os.getenv('DOMAIN', '127.0.0.1')
-ENV_PORT = os.getenv('PORT', '8000')
+# CONNECTION CONFIGURATION
+ENV_DOMAIN = config.get('DOMAIN', 'localhost')
+ENV_PORT = config.get('PORT', '8000')
+ENV_PROTOCOL = config.get('PROTOCOL', 'http')
 
 ALLOWED_HOSTS = [ENV_DOMAIN]
+
 # If a port is 80 or 443, it is not necessary to specify it
 if ENV_PORT not in ['80', '443']:
     ALLOWED_HOSTS.append(ENV_DOMAIN + ':' + ENV_PORT)
@@ -87,8 +95,12 @@ WSGI_APPLICATION = 'becas.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db', 'db.sqlite3'),
+        'ENGINE': config.get('DB_ENGINE'),
+        'NAME': config.get('DB_NAME'),
+        'USER': config.get('DB_USER'),
+        'PASSWORD': config.get('DB_PASSWORD'),
+        'HOST': config.get('DB_HOST'),
+        'PORT': config.get('DB_PORT'),
     }
 }
 

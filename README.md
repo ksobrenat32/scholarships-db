@@ -4,38 +4,50 @@ Un programa diseñado para unificar la base de datos usada para la secretaría d
 
 ## Como ejecutar
 
-1. Instalar docker o podman
-2. Levantar el contenedor
+1. Levantar el contenedor de la base de datos
 
-```bash
-docker run -d \
-    --name scholarships-db \
-    -p 8000:8000 \
-    -v $(pwd)/db:/code/db:Z \
-    -v $(pwd)/media:/code/media:Z \
-    ghcr.io/ksobrenat32/scholarships-db:latest
-```
+   ```bash
+   podman run -d --name scholarships-db \
+       -e POSTGRES_DB=scholarships \
+       -e POSTGRES_USER=scholarships_user \
+       -e POSTGRES_PASSWORD=scholarships_password \
+       -p 5432:5432 \
+       podman.io/postgres:latest
+   ```
 
-3. Crear la base de datos
+2. Levantar el contenedor de la aplicación
 
-```bash
-docker exec -it scholarships-db python manage.py migrate
-docker exec -it scholarships-db python manage.py loaddata initial_data.json
-```
+    ```bash
+    podman run -d \
+        --name scholarships \
+        -p 8000:8000 \
+        -v $(pwd)/config.yaml:/code/config.yaml:Z,ro \
+        -v $(pwd)/media:/code/media:Z \
+        ghcr.io/ksobrenat32/scholarships-db:latest
+    ```
 
-4. Crear usuario administrador
+## Configuración
 
-```bash
-docker exec -it scholarships-db python manage.py createsuperuser
-```
+El archivo de configuración `config.yaml` debe ser configurado con los parámetros necesarios para la aplicación. Dentro de este archivo, se pueden definir los mismos.
 
-5. Acceder a la interfaz de administrador en `http://localhost:8000/admin`
+1. Inicialización de la base de datos
 
-6. Crear información de prueba
+    ```bash
+    podman exec -it scholarships-db python manage.py migrate
+    podman exec -it scholarships-db python manage.py loaddata initial_data.json
+    ```
 
-```bash
-docker exec -it scholarships-db python manage.py generate_users
-```
+2. Crear un superusuario para acceder al panel de administración
+
+    ```bash
+    podman exec -it scholarships-db python manage.py createsuperuser
+    ```
+
+3. Crear información de prueba
+
+    ```bash
+    podman exec -it scholarships-db python manage.py generate_users
+    ```
 
 ## Reglas de negocio
 
