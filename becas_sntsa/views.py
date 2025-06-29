@@ -24,6 +24,19 @@ def trabajador_required(view_func):
         return view_func(request, *args, **kwargs)
     return _wrapped_view_func
 
+# Middleware to check if user has been approved by the admin
+def approved_required(view_func):
+    def _wrapped_view_func(request, *args, **kwargs):
+        if request.user.is_authenticated:
+            try:
+                trabajador = request.user.trabajador
+                if not trabajador.aprobado:
+                    return render(request, 'espera_verificacion.html', {'user': request.user})
+            except Trabajador.DoesNotExist:
+                return redirect('create_trabajador')
+        return view_func(request, *args, **kwargs)
+    return _wrapped_view_func
+
 # Home view
 def home(request):
     return render(request, 'home.html')
@@ -128,6 +141,7 @@ def create_trabajador(request):
 # Create_Becario view
 @login_required
 @trabajador_required
+@approved_required
 def create_becario(request):
     if request.method == 'GET':
         return render(request, 'create_becario.html', {'form': BecarioCreateForm()})
@@ -162,6 +176,7 @@ def create_becario(request):
 # Create_SolicitudNormal view
 @login_required
 @trabajador_required
+@approved_required
 def create_solicitud_normal(request):
     if request.method == 'GET':
         form = SolicitudNormalCreateForm(user=request.user)
@@ -180,6 +195,7 @@ def create_solicitud_normal(request):
 # Create_SolicitudEspecial view
 @login_required
 @trabajador_required
+@approved_required
 def create_solicitud_especial(request):
     if request.method == 'GET':
         form = SolicitudEspecialCreateForm(user=request.user)
@@ -210,6 +226,7 @@ def download_file(request, file_path):
 # View to see becarios
 @login_required
 @trabajador_required
+@approved_required
 def ver_becarios(request):
     becarios = Becario.objects.filter(trabajador=request.user)
     return render(request, 'ver_becarios.html', {'becarios': becarios})
@@ -217,6 +234,7 @@ def ver_becarios(request):
 # View to see solicitudes
 @login_required
 @trabajador_required
+@approved_required
 def ver_solicitudes(request):
     solicitudes_normales = SolicitudNormal.objects.filter(becario__trabajador=request.user)
     solicitudes_especiales = SolicitudEspecial.objects.filter(becario__trabajador=request.user)

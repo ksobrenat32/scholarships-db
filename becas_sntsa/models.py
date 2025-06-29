@@ -58,6 +58,9 @@ class Trabajador(models.Model):
     jurisdiccion = models.ForeignKey(Jurisdiccion, on_delete=models.PROTECT)
     lugar_adscripcion = models.ForeignKey(LugarAdscripcion, on_delete=models.PROTECT)
 
+    # Campo para verificar si el trabajador ha sido aprobado por el administrador
+    aprobado = models.BooleanField(default=False)
+
     def __str__(self):
         return "{}".format(self.usuario.username)
 

@@ -71,6 +71,9 @@ def create_trabajador() -> User:
     jurisdicciones = Jurisdiccion.objects.all()
     jurisdiccion = random.choice(jurisdicciones)
 
+    # Approved status
+    aprobado = random.choice([True, False])
+
     # Create the user
     user = User.objects.create_user(
         username=curp,
@@ -89,7 +92,8 @@ def create_trabajador() -> User:
         seccion=seccion,
         puesto=puesto,
         jurisdiccion=jurisdiccion,
-        lugar_adscripcion=lugar_adscripcion
+        lugar_adscripcion=lugar_adscripcion,
+        aprobado=aprobado
     )
 
     trabajador.save()
