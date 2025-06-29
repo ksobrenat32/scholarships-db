@@ -18,6 +18,7 @@ while ! podman exec scholarships-db pg_isready -U scholarships_user; do
 done
 
 # Configure the Django settings for testing
+python manage.py makemigrations
 python manage.py migrate
 python manage.py loaddata initial_data.json
 
