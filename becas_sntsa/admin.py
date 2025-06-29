@@ -1,5 +1,5 @@
 from django.contrib import admin
-from becas_sntsa.models import Seccion, Puesto, LugarAdscripcion, Grado, Trabajador, Becario, Solicitud, SolicitudNormal, SolicitudEspecial
+from becas_sntsa.models import Seccion, Puesto, LugarAdscripcion, Grado, Trabajador, Becario, SolicitudAprovechamiento, SolicitudExcelencia, SolicitudEspecial
 
 # Register your models here.
 
@@ -16,7 +16,10 @@ class TrabajadorAdmin(admin.ModelAdmin):
 class BecarioAdmin(admin.ModelAdmin):
     search_fields = ['curp']  # Search by curp
 
-class SolicitudNormalAdmin(admin.ModelAdmin):
+class SolicitudAprovechamientoAdmin(admin.ModelAdmin):
+    search_fields = ['becario__curp', 'fecha_solicitud']  # Search by becario or fecha_solicitud
+
+class SolicitudExcelenciaAdmin(admin.ModelAdmin):
     search_fields = ['becario__curp', 'fecha_solicitud']  # Search by becario or fecha_solicitud
 
 class SolicitudEspecialAdmin(admin.ModelAdmin):
@@ -24,5 +27,6 @@ class SolicitudEspecialAdmin(admin.ModelAdmin):
 
 admin.site.register(Trabajador, TrabajadorAdmin)
 admin.site.register(Becario, BecarioAdmin)
-admin.site.register(SolicitudNormal, SolicitudNormalAdmin)
+admin.site.register(SolicitudAprovechamiento, SolicitudAprovechamientoAdmin)
+admin.site.register(SolicitudExcelencia, SolicitudExcelenciaAdmin)
 admin.site.register(SolicitudEspecial, SolicitudEspecialAdmin)

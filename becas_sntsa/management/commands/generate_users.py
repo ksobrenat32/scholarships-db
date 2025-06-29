@@ -2,7 +2,7 @@
 from django.core.management.base import BaseCommand
 import random
 from faker import Faker
-from becas_sntsa.models import User, Trabajador, Becario, Solicitud, Seccion, Puesto, Jurisdiccion, LugarAdscripcion, Grado, SolicitudNormal, SolicitudEspecial
+from becas_sntsa.models import User, Trabajador, Becario, Solicitud, Seccion, Puesto, Jurisdiccion, LugarAdscripcion, Grado, SolicitudAprovechamiento, SolicitudExcelencia, SolicitudEspecial
 
 # Generate mexican CURP
 def generate_curp(nombre, apellido_paterno, apellido_materno):
@@ -132,21 +132,34 @@ def create_solicitud(becario: Becario) -> Solicitud:
     else:
         notas = ""
 
-    # Solicitud Normal or Especial
-    if random.choice([True, False]):
-        # Normal
+    type = random.choice([SolicitudAprovechamiento, SolicitudExcelencia, SolicitudEspecial])
+
+    # Solicitud Aprovechamiento, Excelencia or Especial
+    if type == SolicitudAprovechamiento:
         grado = random.choice(Grado.objects.all())
         promedio = float(random.randint(70, 100)) / 10
-        tipo = random.choice(SolicitudNormal._meta.get_field('tipo').choices)[0]
 
-        solicitud = SolicitudNormal(
+        solicitud = SolicitudAprovechamiento(
             becario=becario,
             fecha_solicitud=fecha_solicitud,
             estado=estado,
             notas=notas,
             grado=grado,
             promedio=promedio,
-            tipo=tipo
+        )
+    elif type == SolicitudExcelencia:
+        grado = random.choice(Grado.objects.all())
+        promedio = float(random.randint(70, 100)) / 10
+        carrera = fake.text(max_nb_chars=128)
+
+        solicitud = SolicitudExcelencia(
+            becario=becario,
+            fecha_solicitud=fecha_solicitud,
+            estado=estado,
+            notas=notas,
+            grado=grado,
+            promedio=promedio,
+            carrera=carrera,
         )
     else:
         # Especial

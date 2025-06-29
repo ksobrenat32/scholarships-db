@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% load form_tags %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="p-4">
+            <h1 class="text-center">Registrar Solicitud de Excelencia</h1>
+
+            {% if error %}
+            <div class="alert alert-danger" role="alert">
+                {{ error }}
+            </div>
+            {% endif %}
+
+            <form method="POST" action="{% url 'create_solicitud_excelencia' %}" enctype="multipart/form-data" class="mt-4" id="solicitudNormalForm">
+                {% csrf_token %}
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-1">
+                            <label for="becario" class="form-label">Becario</label>
+                            {{ form.becario|add_class:"form-control" }}
+                        </div>
+                        <div class="mb-1">
+                            <label for="ine" class="form-label">INE del trabajador</label>
+                            {{ form.ine|add_class:"form-control" }}
+                        </div>
+                        <div class="mb-1">
+                            <label for="recibo_nomina" class="form-label">Último recibo de Nómina</label>
+                            {{ form.recibo_nomina|add_class:"form-control" }}
+                        </div>
+                        <div class="mb-1">
+                            <label for="carrera" class="form-label">Carrera</label>
+                            {{ form.carrera|add_class:"form-control" }}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-1">
+                            <label for="boleta" class="form-label">Boleta</label>
+                            {{ form.boleta|add_class:"form-control" }}
+                        </div>
+                        <div class="mb-1">
+                            <label for="grado" class="form-label">Grado</label>
+                            {{ form.grado|add_class:"form-control" }}
+                        </div>
+                        <div class="mb-1">
+                            <label for="promedio" class="form-label">Promedio</label>
+                            {{ form.promedio|add_class:"form-control" }}
+                        </div>
+                        <div class="mb-1 text-center">
+                            <br>
+                            <button type="submit" class="btn btn-primary">Enviar</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

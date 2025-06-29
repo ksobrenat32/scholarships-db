@@ -14,10 +14,19 @@
             </tr>
         </thead>
         <tbody>
-            {% for solicitud in solicitudes_normales %}
+            {% for solicitud in solicitudes_aprovechamiento %}
             <tr>
                 <td>{{ solicitud.becario }}</td>
-                <td>{{ solicitud.get_tipo_display }}</td>
+                <td>Aprovechamiento</td>
+                <td>{{ solicitud.fecha_solicitud }}</td>
+                <td>{{ solicitud.get_estado_display }}</td>
+                <td>{{ solicitud.notas }}</td>
+            </tr>
+            {% endfor %}
+            {% for solicitud in solicitudes_excelencia %}
+            <tr>
+                <td>{{ solicitud.becario }}</td>
+                <td>Excelencia</td>
                 <td>{{ solicitud.fecha_solicitud }}</td>
                 <td>{{ solicitud.get_estado_display }}</td>
                 <td>{{ solicitud.notas }}</td>

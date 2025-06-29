@@ -103,17 +103,24 @@ class Solicitud(models.Model):
     estado = models.CharField(max_length=1, choices=ESTADO_CHOICES, default='P')
     notas = models.TextField(null=True, blank=True)
 
-# Clase para solicitud normal de beca
-class SolicitudNormal(Solicitud):
-    TIPO_CHOICES = [
-        ('A', 'Aprovechamiento'),
-        ('E', 'Excelencia'),
-    ]
+# Clase para solicitud de Aprovechamientob
+class SolicitudAprovechamiento(Solicitud):
     grado = models.ForeignKey(Grado, on_delete=models.CASCADE)
     # From 6 to 10
     promedio = models.FloatField()
     boleta = models.FileField(upload_to='boleta/')
-    tipo = models.CharField(max_length=1, choices=TIPO_CHOICES, default='A')
+
+    def __str__(self):
+        return "{} - {} - {}".format(self.becario, self.fecha_solicitud, self.estado)
+
+
+# Clase para solicitud de excelencia
+class SolicitudExcelencia(Solicitud):
+    grado = models.ForeignKey(Grado, on_delete=models.CASCADE)
+    # From 6 to 10
+    promedio = models.FloatField()
+    boleta = models.FileField(upload_to='boleta/')
+    carrera = models.CharField(max_length=128)
 
     def __str__(self):
         return "{} - {} - {}".format(self.becario, self.fecha_solicitud, self.estado)

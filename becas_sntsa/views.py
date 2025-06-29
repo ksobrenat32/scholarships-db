@@ -4,8 +4,8 @@ from django.contrib.auth.models import User
 from django.contrib.auth import login, logout, authenticate
 from django.db import IntegrityError
 from django.contrib.auth.decorators import login_required
-from becas_sntsa.forms import TrabajadorCreateForm, BecarioCreateForm, SolicitudNormalCreateForm, SolicitudEspecialCreateForm
-from becas_sntsa.models import Trabajador, Becario, SolicitudNormal, SolicitudEspecial
+from becas_sntsa.forms import TrabajadorCreateForm, BecarioCreateForm, SolicitudAprovechamientoCreateForm, SolicitudExcelenciaCreateForm, SolicitudEspecialCreateForm
+from becas_sntsa.models import Trabajador, Becario, SolicitudAprovechamiento, SolicitudExcelencia, SolicitudEspecial
 from django.http import HttpResponseForbidden, FileResponse
 from django.conf import settings
 import os
@@ -173,16 +173,16 @@ def create_becario(request):
                 'error': 'Error al crear el becario'
             })
 
-# Create_SolicitudNormal view
+# Create_Solicitud_Aprovechamiento view
 @login_required
 @trabajador_required
 @approved_required
-def create_solicitud_normal(request):
+def create_solicitud_aprovechamiento(request):
     if request.method == 'GET':
-        form = SolicitudNormalCreateForm(user=request.user)
-        return render(request, 'create_solicitud_normal.html', {'form': form})
+        form = SolicitudAprovechamientoCreateForm(user=request.user)
+        return render(request, 'create_solicitud_aprovechamiento.html', {'form': form})
     elif request.method == 'POST':
-        form = SolicitudNormalCreateForm(request.POST, request.FILES, user=request.user)
+        form = SolicitudAprovechamientoCreateForm(request.POST, request.FILES, user=request.user)
         if form.is_valid():
             solicitud = form.save(commit=False)
             solicitud.becario = form.cleaned_data['becario']
@@ -190,7 +190,27 @@ def create_solicitud_normal(request):
             solicitud.save()
             return redirect('becas')
         else:
-            return render(request, 'create_solicitud_normal.html', {'form': form, 'error': 'Error en la solicitud'})
+            return render(request, 'create_solicitud_aprovechamiento.html', {'form': form, 'error': 'Error en la solicitud'})
+
+
+# Create_SolicitudNormal view
+@login_required
+@trabajador_required
+@approved_required
+def create_solicitud_excelencia(request):
+    if request.method == 'GET':
+        form = SolicitudExcelenciaCreateForm(user=request.user)
+        return render(request, 'create_solicitud_excelencia.html', {'form': form})
+    elif request.method == 'POST':
+        form = SolicitudExcelenciaCreateForm(request.POST, request.FILES, user=request.user)
+        if form.is_valid():
+            solicitud = form.save(commit=False)
+            solicitud.becario = form.cleaned_data['becario']
+            solicitud.estado = 'P'  # Set default estado to 'En progreso'
+            solicitud.save()
+            return redirect('becas')
+        else:
+            return render(request, 'create_solicitud_excelencia.html', {'form': form, 'error': 'Error en la solicitud'})
 
 # Create_SolicitudEspecial view
 @login_required
@@ -236,10 +256,12 @@ def ver_becarios(request):
 @trabajador_required
 @approved_required
 def ver_solicitudes(request):
-    solicitudes_normales = SolicitudNormal.objects.filter(becario__trabajador=request.user)
+    solicitudes_normales = SolicitudAprovechamiento.objects.filter(becario__trabajador=request.user)
+    solicitudes_excelencia = SolicitudExcelencia.objects.filter(becario__trabajador=request.user)
     solicitudes_especiales = SolicitudEspecial.objects.filter(becario__trabajador=request.user)
     return render(request, 'ver_solicitudes.html', {
-        'solicitudes_normales': solicitudes_normales,
+        'solicitudes_aprovechamiento': solicitudes_normales,
+        'solicitudes_excelencia': solicitudes_excelencia,
         'solicitudes_especiales': solicitudes_especiales
     })
 

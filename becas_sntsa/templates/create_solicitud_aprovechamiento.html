@@ -6,7 +6,7 @@
 <div class="row justify-content-center">
     <div class="col-md-10">
         <div class="p-4">
-            <h1 class="text-center">Registrar Solicitud</h1>
+            <h1 class="text-center">Registrar Solicitud de Aprovechamiento</h1>
 
             {% if error %}
             <div class="alert alert-danger" role="alert">
@@ -14,7 +14,7 @@
             </div>
             {% endif %}
 
-            <form method="POST" action="{% url 'create_solicitud_normal' %}" enctype="multipart/form-data" class="mt-4" id="solicitudNormalForm">
+            <form method="POST" action="{% url 'create_solicitud_aprovechamiento' %}" enctype="multipart/form-data" class="mt-4" id="solicitudNormalForm">
                 {% csrf_token %}
 
                 <div class="row">
@@ -30,10 +30,6 @@
                         <div class="mb-1">
                             <label for="recibo_nomina" class="form-label">Último recibo de Nómina</label>
                             {{ form.recibo_nomina|add_class:"form-control" }}
-                        </div>
-                        <div class="mb-1">
-                            <label for="tipo" class="form-label">Tipo</label>
-                            {{ form.tipo|add_class:"form-control" }}
                         </div>
                     </div>
                     <div class="col-md-6">
