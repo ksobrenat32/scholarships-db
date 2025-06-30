@@ -20,6 +20,9 @@ done
 echo "Applying database migrations..."
 python manage.py migrate
 
+echo "Collecting static files..."
+python manage.py collectstatic --noinput
+
 # Run the application
 echo "Starting the application..."
 exec python -m gunicorn becas.wsgi:application --bind "0.0.0.0:$port"
