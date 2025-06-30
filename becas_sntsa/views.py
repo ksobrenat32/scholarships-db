@@ -237,7 +237,11 @@ def download_file(request, file_path):
     if not request.user.is_staff:
         return HttpResponseForbidden("You do not have permission to access this file.")
 
-    file_full_path = os.path.join(settings.MEDIA_ROOT, file_path)
+    normalized_path = os.path.normpath(file_path)
+    file_full_path = os.path.join(settings.MEDIA_ROOT, normalized_path)
+    if not file_full_path.startswith(settings.MEDIA_ROOT):
+        return HttpResponseForbidden("Invalid file path.")
+
     if os.path.exists(file_full_path):
         return FileResponse(open(file_full_path, 'rb'))
     else:
