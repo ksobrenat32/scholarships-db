@@ -16,8 +16,10 @@ while ! pg_isready -h "$db_host" -p "$db_port" -U "$db_user"; do
 done
 
 # Configure the Django settings for production
-python manage.py migrate --noinput
+echo "Applying database migrations..."
+python manage.py migrate
 python manage.py collectstatic --noinput
 
 # Run the application
+echo "Starting the application..."
 exec gunicorn becas.wsgi:application --bind
