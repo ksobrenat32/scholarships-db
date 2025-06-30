@@ -5,9 +5,10 @@ set -e
 # This script sets up the environment for the Django application inside a Docker container.
 
 # Source the environment variables
-db_host=$(yq eval '.db_host' /code/config.yaml)
-db_port=$(yq eval '.db_port' /code/config.yaml)
-db_user=$(yq eval '.db_user' /code/config.yaml)
+port=$(yq -r '.PORT' /code/config.yaml)
+db_host=$(yq -r '.DB_HOST' /code/config.yaml)
+db_port=$(yq -r '.DB_PORT' /code/config.yaml)
+db_user=$(yq -r '.DB_USER' /code/config.yaml)
 
 # Wait for PostgreSQL to be ready
 echo "Waiting for PostgreSQL to start..."
@@ -18,8 +19,7 @@ done
 # Configure the Django settings for production
 echo "Applying database migrations..."
 python manage.py migrate
-python manage.py collectstatic --noinput
 
 # Run the application
 echo "Starting the application..."
-exec gunicorn becas.wsgi:application --bind
+exec python -m gunicorn becas.wsgi:application --bind "0.0.0.0:$port"
