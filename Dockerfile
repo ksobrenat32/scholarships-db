@@ -9,7 +9,14 @@ ENV PYTHONUNBUFFERED 1
 WORKDIR /code
 
 # Create volumes for database and media files
-VOLUME ["/code/db", "/code/media"]
+VOLUME ["/code/config.yaml", "/code/media"]
+
+# Install system dependencies
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    postgresql-client yq &&\
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # Create a non-root user with UID 1000
 RUN adduser --disabled-password --gecos '' --uid 1000 appuser
@@ -31,4 +38,4 @@ COPY . /code/
 EXPOSE 8000
 
 # Run the application
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+ENTRYPOINT [ "/code/entrypoint.sh" ]

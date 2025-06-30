@@ -95,7 +95,7 @@ WSGI_APPLICATION = 'becas.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': config.get('DB_ENGINE'),
+        'ENGINE': 'django.db.backends.postgresql',
         'NAME': config.get('DB_NAME'),
         'USER': config.get('DB_USER'),
         'PASSWORD': config.get('DB_PASSWORD'),

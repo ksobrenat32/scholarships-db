@@ -12,7 +12,6 @@ PROTOCOL: 'http' # The protocol to use (http or https)
 DEBUG: True
 
 # Database configuration
-DB_ENGINE: 'django.db.backends.postgresql'
 DB_NAME: 'scholarships'
 DB_USER: 'scholarships_user'
 DB_PASSWORD: 'scholarships_password'
