@@ -95,8 +95,9 @@ class Solicitud(models.Model):
     # Of the Trabajador
     ine = models.FileField(upload_to='ine/')
     ESTADO_CHOICES = [
-        ('W', 'Solicitud recibida'),
+        ('R', 'Solicitud recibida'),
         ('E', 'Error en documentos, revisar notas'),
+        ('P', 'En espera de resultados'),
         ('T', 'Beca otorgada'),
         ('F', 'Beca no otorgada'),
     ]
