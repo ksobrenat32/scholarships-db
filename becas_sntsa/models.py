@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Q
 from django.contrib.auth.models import User
 from django.utils import timezone
 
@@ -104,7 +105,16 @@ class Solicitud(models.Model):
     estado = models.CharField(max_length=1, choices=ESTADO_CHOICES, default='P')
     notas = models.TextField(null=True, blank=True)
 
-# Clase para solicitud de Aprovechamientob
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['becario'],
+                condition=Q(estado='P'),
+                name='unique_solicitud_en_espera'
+            )
+        ]
+
+# Clase para solicitud de Aprovechamiento
 class SolicitudAprovechamiento(Solicitud):
     grado = models.ForeignKey(Grado, on_delete=models.CASCADE)
     # From 6 to 10

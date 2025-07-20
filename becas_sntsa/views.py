@@ -186,7 +186,15 @@ def create_solicitud_aprovechamiento(request):
         if form.is_valid():
             solicitud = form.save(commit=False)
             solicitud.becario = form.cleaned_data['becario']
-            solicitud.estado = 'P'  # Set default estado to 'En progreso'
+            solicitud.estado = 'R'  # Set default estado to 'Recibida'
+
+            # Check if the becario has any other pending solicitud in estado 'R' or 'P'
+            if SolicitudAprovechamiento.objects.filter(becario=solicitud.becario, estado__in=['R', 'P']).exists():
+                return render(request, 'create_solicitud_aprovechamiento.html', {
+                    'form': form,
+                    'error': 'El becario ya tiene una solicitud pendiente en esta categoría.'
+                })
+
             solicitud.save()
             return redirect('becas')
         else:
@@ -206,7 +214,15 @@ def create_solicitud_excelencia(request):
         if form.is_valid():
             solicitud = form.save(commit=False)
             solicitud.becario = form.cleaned_data['becario']
-            solicitud.estado = 'P'  # Set default estado to 'En progreso'
+            solicitud.estado = 'R'  # Set default estado to 'Recibida'
+
+            # Check if the becario has any other pending solicitud in estado 'R' or 'P'
+            if SolicitudExcelencia.objects.filter(becario=solicitud.becario, estado__in=['R', 'P']).exists():
+                return render(request, 'create_solicitud_excelencia.html', {
+                    'form': form,
+                    'error': 'El becario ya tiene una solicitud pendiente en esta categoría.'
+                })
+
             solicitud.save()
             return redirect('becas')
         else:
@@ -225,7 +241,15 @@ def create_solicitud_especial(request):
         if form.is_valid():
             solicitud = form.save(commit=False)
             solicitud.becario = form.cleaned_data['becario']
-            solicitud.estado = 'P'  # Set default estado to 'En progreso'
+            solicitud.estado = 'R'  # Set default estado to 'Recibida'
+
+            # Check if the becario has any other pending solicitud in estado 'R' or 'P'
+            if SolicitudEspecial.objects.filter(becario=solicitud.becario, estado__in=['R', 'P']).exists():
+                return render(request, 'create_solicitud_especial.html', {
+                    'form': form,
+                    'error': 'El becario ya tiene una solicitud pendiente en esta categoría.'
+                })
+
             solicitud.save()
             return redirect('becas')
         else:
