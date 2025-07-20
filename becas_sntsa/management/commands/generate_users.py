@@ -127,6 +127,13 @@ def create_solicitud(becario: Becario) -> Solicitud:
     # Create the solicitud
     fecha_solicitud=fake.date()
     estado = random.choice(Solicitud._meta.get_field('estado').choices)[0]
+
+    # If estado is 'P', check if the becario has any pending solicitud
+    if estado == "P":
+        if Solicitud.objects.filter(becario=becario, estado='P').exists():
+            estado = "F"  # Change to "Beca no otorgada" if already exists
+
+    # If the estado is 'E' (Especial), add notes
     if estado == "E":
         notas = fake.text(max_nb_chars=200)
     else:
