@@ -17,13 +17,13 @@ class BecarioAdmin(admin.ModelAdmin):
     search_fields = ['curp']  # Search by curp
 
 class SolicitudAprovechamientoAdmin(admin.ModelAdmin):
-    search_fields = ['becario__curp', 'fecha_solicitud']  # Search by becario or fecha_solicitud
+    search_fields = ['becario__curp', 'fecha_solicitud', 'becario__trabajador__username']
 
 class SolicitudExcelenciaAdmin(admin.ModelAdmin):
-    search_fields = ['becario__curp', 'fecha_solicitud']  # Search by becario or fecha_solicitud
+    search_fields = ['becario__curp', 'fecha_solicitud', 'becario__trabajador__username']
 
 class SolicitudEspecialAdmin(admin.ModelAdmin):
-    search_fields = ['becario__curp', 'fecha_solicitud']  # Search by becario or fecha_solicitud
+    search_fields = ['becario__curp', 'fecha_solicitud', 'becario__trabajador__username']
 
 admin.site.register(Trabajador, TrabajadorAdmin)
 admin.site.register(Becario, BecarioAdmin)
