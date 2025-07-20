@@ -11,7 +11,7 @@ admin.site.register(Grado)
 
 class TrabajadorAdmin(admin.ModelAdmin):
     search_fields = ['usuario__username']  # Search by username of linked user
-    list_filter = ['aprobado']
+    list_filter = ['aprobado', 'lugar_adscripcion', 'jurisdiccion']
 
 class BecarioAdmin(admin.ModelAdmin):
     search_fields = ['curp']  # Search by curp
