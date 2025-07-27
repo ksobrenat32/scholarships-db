@@ -56,7 +56,7 @@ if ENV_PORT not in ['80', '443']:
 CSRF_TRUSTED_ORIGINS = [ENV_PROTOCOL + '://' + ENV_DOMAIN]
 
 # Demo mode configuration, this generates a SQLite database with demo data
-DEMO = str_to_bool(os.environ.get('DEMO', 'False'))
+DEMO = str_to_bool(os.environ.get('DEMO', 'True'))
 if DEMO:
     DEBUG = True  # Enable debug mode for demo
     SECRET_KEY = get_random_secret_key() # Generate a random secret key for demo mode
@@ -64,7 +64,8 @@ if DEMO:
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-DATABASE_TYPE = os.environ.get('DATABASE_TYPE', 'postgresql')
+if not DEMO:
+    DATABASE_TYPE = os.environ.get('DATABASE_TYPE', 'postgresql') 
 if DATABASE_TYPE == 'postgresql':
     # PostgreSQL settings
     DATABASES = {
