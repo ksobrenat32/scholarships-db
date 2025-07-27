@@ -2,52 +2,143 @@
 
 Un programa diseñado para unificar la base de datos usada para la secretaría de becas de Guanajuato Sección 37.
 
-## Como ejecutar
+## Demo
 
-1. Levantar el contenedor de la base de datos
+Para ejecutar el programa en modo demo, se utiliza SQLite como base de datos. Esto es útil para pruebas y desarrollo sin necesidad de configurar una base de datos PostgreSQL.
 
-   ```bash
-   podman run -d --name scholarships-db \
-       -e POSTGRES_DB=scholarships \
-       -e POSTGRES_USER=scholarships_user \
-       -e POSTGRES_PASSWORD=scholarships_password \
-       -p 5432:5432 \
-       podman.io/postgres:latest
-   ```
+```bash
+podman run -p 8000:8000 ghcr.io/ksobrenat32/scholarships-db:latest
+```
 
-2. Levantar el contenedor de la aplicación
+## Producción
 
-    ```bash
-    podman run -d \
-        --name scholarships \
-        -p 8000:8000 \
-        -v $(pwd)/config.yaml:/code/config.yaml:Z,ro \
-        -v $(pwd)/media:/code/media:Z \
-        ghcr.io/ksobrenat32/scholarships-db:latest
-    ```
+Para ejecutar el programa en un entorno de producción, se recomienda utilizar PostgreSQL como base de datos. Asegúrate de tener configurada la base de datos y las variables de entorno necesarias.
 
-## Configuración
+Se recomienda correr con podman en pod para que la aplicación y la base de datos estén en el mismo pod, lo que facilita la comunicación entre ellos.
 
-El archivo de configuración `config.yaml` debe ser configurado con los parámetros necesarios para la aplicación. Dentro de este archivo, se pueden definir los mismos.
+### Configuración del Pod
 
-1. Inicialización de la base de datos
+Puedes crear un pod para la aplicación y la base de datos utilizando el siguiente comando:
 
-    ```bash
-    podman exec -it scholarships-db python manage.py migrate
-    podman exec -it scholarships-db python manage.py loaddata initial_data.json
-    ```
+```bash
+podman pod create --name scholarships -p 8000:8000
+```
 
-2. Crear un superusuario para acceder al panel de administración
+### Contenedores de la Aplicación y Base de Datos
 
-    ```bash
-    podman exec -it scholarships-db python manage.py createsuperuser
-    ```
+Para la base de datos, puedes utilizar el siguiente comando para iniciar un contenedor de PostgreSQL:
 
-3. Crear información de prueba
+```bash
+podman run -d --name scholarships-db \
+    --pod scholarships \
+    -e POSTGRES_DB=scholarships \
+    -e POSTGRES_USER=scholarships_user \
+    -e POSTGRES_PASSWORD=scholarships_password \
+    -v /path/to/your/db:/var/lib/postgresql/data:z \
+    docker.io/library/postgres:latest
+```
 
-    ```bash
-    podman exec -it scholarships-db python manage.py generate_users
-    ```
+Luego, puedes iniciar el contenedor de la aplicación:
+
+```bash
+podman run -d --name scholarships-app \
+    --pod scholarships \
+    -e SECRET_KEY=your_secret_key \
+    -e DEBUG=False \
+    -e DEMO=False \
+    -e URL=http://127.0.0.1:8000 \
+    -e PORT=8000 \
+    -e DATABASE_TYPE=postgresql \
+    -e POSTGRES_DB=scholarships \
+    -e POSTGRES_USER=scholarships_user \
+    -e POSTGRES_PASSWORD=scholarships_password \
+    -e POSTGRES_HOST=localhost \
+    -e POSTGRES_PORT=5432 \
+    -v /path/to/your/media:/code/media:z \
+    ghcr.io/ksobrenat32/scholarships-db:latest
+```
+
+### Crear usuario administrador
+
+Para crear un usuario administrador que pueda acceder al panel de administración, puedes ejecutar el siguiente comando:
+
+```bash
+podman exec -it scholarships-app python manage.py createsuperuser
+```
+
+### Acceso a la Aplicación
+
+En caso de que estés utilizando un proxy inverso, asegúrate de que esté configurado correctamente para redirigir las solicitudes al contenedor de la aplicación. El puerto default es `8000`, pero puedes cambiarlo según tus necesidades.
+
+Ejemplo con caddy:
+
+```Caddyfile
+mi_dominio.com {
+    reverse_proxy localhost:8000
+}
+```
+
+### Archivos quadlet
+
+Para administrar los contenedores de manera más sencilla, puedes utilizar archivos quadlet. Estos archivos permiten definir la configuración del contenedor de manera declarativa.
+
+En primer lugar debes crear un archivo de configuración. Te puedes guiar del archivo `.env.example` para definir las variables de entorno necesarias.
+
+Los archivos de configuración deben estar en `~/.config/containers/systemd/` y deben tener la extensión `.container` o `.pod`.
+
+`scholarships.pod`:
+
+```systemd
+[Pod]
+PodName=scholarships
+PublishPort=8000:8000
+
+[Install]
+WantedBy=default.target
+```
+
+`scholarships-db.container`:
+
+```systemd
+[Unit]
+Description=Scholarships database container
+
+[Container]
+ContainerName=scholarships-db
+Image=docker.io/library/postgres:latest
+EnvironmentFile=/path/to/your/.env
+AutoUpdate=registry
+Pod=scholarships.pod
+Volume=/path/to/your/db:/var/lib/postgresql/data:z
+
+[Install]
+WantedBy=default.target
+```
+
+`scholarships-app.container`:
+
+```systemd
+[Unit]
+Description=Scholarships application container
+DependsOn=scholarships-db.service
+
+[Container]
+ContainerName=scholarships-app
+Image=ghcr.io/ksobrenat32/scholarships-db:latest
+EnvironmentFile=/path/to/your/.env
+AutoUpdate=registry
+Pod=scholarships.pod
+Volume=/path/to/your/media:/code/media:z
+
+[Install]
+WantedBy=default.target
+```
+
+Una vez que tengas estos archivos en `~/.config/containers/systemd/`, puedes iniciar el pod y los contenedores con:
+
+```bash
+systemctl --user start scholarships-pod.service
+```
 
 ## Reglas de negocio
 

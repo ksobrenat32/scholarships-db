@@ -31,14 +31,14 @@ if [ "$DEMO" = "True" ]; then
 else
     echo "Running in production mode."
     # Get database configuration from environment variables
-    DB_TYPE=${DATABASE_TYPE:-sqlite}
-    if [ "$DB_TYPE" != "postgresql" ] && [ "$DB_TYPE" != "sqlite" ]; then
-        echo "Invalid DATABASE_TYPE. Expected 'postgresql' or 'sqlite', but got '$DB_TYPE'."
+    DATABASE_TYPE=${DATABASE_TYPE:-sqlite}
+    if [ "$DATABASE_TYPE" != "postgresql" ] && [ "$DATABASE_TYPE" != "sqlite" ]; then
+        echo "Invalid DATABASE_TYPE. Expected 'postgresql' or 'sqlite', but got '$DATABASE_TYPE'."
         exit 1
     fi
 
-    echo "Using database type: $DB_TYPE"
-    if [ "$DB_TYPE" = "sqlite" ]; then
+    echo "Using database type: $DATABASE_TYPE"
+    if [ "$DATABASE_TYPE" = "sqlite" ]; then
         echo "Using SQLite database."
         # Ensure the SQLite database file exists
         if [ ! -f /code/db.sqlite3 ]; then
@@ -46,14 +46,15 @@ else
         fi
     else
         echo "Using PostgreSQL database."
-        DB_HOST=${DB_HOST:-127.0.0.1}
-        DB_PORT=${DB_PORT:-5432}
-        DB_USER=${DB_USER:-scholarships_user}
-        DB_PASSWORD=${DB_PASSWORD:-scholarships_password}
+        POSTGRES_DB=${POSTGRES_DB:-scholarships_db}
+        POSTGRES_USER=${POSTGRES_USER:-scholarships_user}
+        POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-scholarships_password}
+        POSTGRES_HOST=${POSTGRES_HOST:-127.0.0.1}
+        POSTGRES_PORT=${POSTGRES_PORT:-5432}
 
         # Wait for PostgreSQL to be ready
-        echo "Waiting for PostgreSQL to start at $DB_HOST:$DB_PORT..."
-        while ! pg_isready -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER"; do
+        echo "Waiting for PostgreSQL to start at $POSTGRES_HOST:$POSTGRES_PORT..."
+        while ! pg_isready -h "$POSTGRES_HOST" -p "$POSTGRES_PORT" -U "$POSTGRES_USER"; do
             sleep 1
         done
 

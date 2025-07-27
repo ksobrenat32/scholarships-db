@@ -43,17 +43,13 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
 # CONNECTION CONFIGURATION
-ENV_DOMAIN = os.environ.get('DOMAIN', '127.0.0.1')
-ENV_PORT = os.environ.get('PORT', '8000')
-ENV_PROTOCOL = os.environ.get('PROTOCOL', 'http')
+URL = os.environ.get('URL', 'http://127.0.0.1:8000')
 
-ALLOWED_HOSTS = [ENV_DOMAIN]
+# Append just the domain to the allowed hosts
+DOMAIN = URL.split("://")[-1].split("/")[0].split(':')[0]
+ALLOWED_HOSTS = [DOMAIN]
 
-# If a port is 80 or 443, it is not necessary to specify it
-if ENV_PORT not in ['80', '443']:
-    ALLOWED_HOSTS.append(ENV_DOMAIN + ':' + ENV_PORT)
-
-CSRF_TRUSTED_ORIGINS = [ENV_PROTOCOL + '://' + ENV_DOMAIN]
+CSRF_TRUSTED_ORIGINS = [URL]
 
 # Demo mode configuration, this generates a SQLite database with demo data
 DEMO = str_to_bool(os.environ.get('DEMO', 'True'))
@@ -71,11 +67,11 @@ if DATABASE_TYPE == 'postgresql':
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.environ.get('DB_NAME', 'scholarships'),
-            'USER': os.environ.get('DB_USER', 'scholarships_user'),
-            'PASSWORD': os.environ.get('DB_PASSWORD', 'scholarships_password'),
-            'HOST': os.environ.get('DB_HOST', 'localhost'),
-            'PORT': os.environ.get('DB_PORT', '5432'),
+            'NAME': os.environ.get('POSTGRES_DB', 'scholarships_db'),
+            'USER': os.environ.get('POSTGRES_USER', 'scholarships_user'),
+            'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'scholarships_password'),
+            'HOST': os.environ.get('POSTGRES_HOST', 'localhost'),
+            'PORT': os.environ.get('POSTGRES_PORT', '5432'),
         }
     }
 else:
