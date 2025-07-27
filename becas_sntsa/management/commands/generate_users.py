@@ -4,7 +4,7 @@ import random
 from faker import Faker
 from becas_sntsa.models import User, Trabajador, Becario, Solicitud, Seccion, Puesto, Jurisdiccion, LugarAdscripcion, Grado, SolicitudAprovechamiento, SolicitudExcelencia, SolicitudEspecial
 
-# Generate mexican CURP
+# Generate Mexican CURP
 def generate_curp(nombre, apellido_paterno, apellido_materno):
     curp = ""
     # First letter of the last name
@@ -44,7 +44,7 @@ def generate_curp(nombre, apellido_paterno, apellido_materno):
     return curp
 
 # Create the users with a trabajador
-def create_trabajador() -> User:
+def create_trabajador() -> Trabajador:
     # Create a Faker instance
     fake = Faker('es_MX')
 
@@ -188,15 +188,66 @@ def create_solicitud(becario: Becario) -> Solicitud:
 class Command(BaseCommand):
     help = 'Generate users for testing'
 
-    def handle(self, *args, **kwargs):
-        num_users = int(input("Enter the number of users to create: "))
-        for _ in range(num_users):
+    def add_arguments(self, parser):
+        parser.add_argument(
+            '--num_users',
+            type=int,
+            default=10,
+            help='Number of users (trabajadores) to create'
+        )
+        parser.add_argument(
+            '--min-becarios',
+            type=int,
+            default=1,
+            help='Minimum number of becarios per trabajador (default: 1)'
+        )
+        parser.add_argument(
+            '--max-becarios',
+            type=int,
+            default=5,
+            help='Maximum number of becarios per trabajador (default: 5)'
+        )
+        parser.add_argument(
+            '--min-solicitudes',
+            type=int,
+            default=1,
+            help='Minimum number of solicitudes per becario (default: 1)'
+        )
+        parser.add_argument(
+            '--max-solicitudes',
+            type=int,
+            default=5,
+            help='Maximum number of solicitudes per becario (default: 5)'
+        )
+
+    def handle(self, *args, **options):
+        num_users = options['num_users']
+        min_becarios = options['min_becarios']
+        max_becarios = options['max_becarios']
+        min_solicitudes = options['min_solicitudes']
+        max_solicitudes = options['max_solicitudes']
+
+        self.stdout.write(
+            self.style.SUCCESS(
+                f'Creating {num_users} users with {min_becarios}-{max_becarios} becarios each '
+                f'and {min_solicitudes}-{max_solicitudes} solicitudes per becario...'
+            )
+        )
+
+        for i in range(num_users):
             trabajador = create_trabajador()
-            # Create from 1 to 3 Becarios for each Trabajador
-            num_becarios = random.randint(1, 5)
+            # Create from min_becarios to max_becarios Becarios for each Trabajador
+            num_becarios = random.randint(min_becarios, max_becarios)
             for _ in range(num_becarios):
                 becario = create_becario(trabajador)
-                # Create from 1 to 3 Solicitudes for each Becario
-                num_solicitudes = random.randint(1, 5)
+                # Create from min_solicitudes to max_solicitudes Solicitudes for each Becario
+                num_solicitudes = random.randint(min_solicitudes, max_solicitudes)
                 for _ in range(num_solicitudes):
                     create_solicitud(becario)
+            
+            if (i + 1) % 5 == 0:
+                self.stdout.write(f'Created {i + 1}/{num_users} users...')
+
+        self.stdout.write(
+            self.style.SUCCESS(f'Successfully created {num_users} users with their becarios and solicitudes!')
+        )
