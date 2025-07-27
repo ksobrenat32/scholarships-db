@@ -11,32 +11,41 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 import os
-import yaml
 from pathlib import Path
+from django.core.management.utils import get_random_secret_key
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
-# Load the security key from a YAML file
-config_path = os.path.join(BASE_DIR, 'config.yaml')
-if os.path.exists(config_path):
-    with open(config_path, 'r') as config_file:
-        config = yaml.safe_load(config_file)
+# Helper function to convert string to boolean
+def str_to_bool(value):
+    if isinstance(value, bool):
+        return value
+    if value.lower() in ('true', '1', 'yes', 'on'):
+        return True
+    return False
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config.get('SECURITY_KEY', 'change-me-to-a-secure-key')
+SECRET_KEY = os.environ.get('SECRET_KEY', get_random_secret_key())
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config.get('DEBUG', 'False')
+DEBUG = str_to_bool(os.environ.get('DEBUG', 'True'))
+
+# Database type configuration
+# This can be set to 'sqlite' for SQLite or 'postgresql' for PostgreSQL
+DATABASE_TYPE = os.environ.get('DATABASE_TYPE', 'postgresql')
+
+# Media files configuration
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
 
 # CONNECTION CONFIGURATION
-ENV_DOMAIN = config.get('DOMAIN', 'localhost')
-ENV_PORT = config.get('PORT', '8000')
-ENV_PROTOCOL = config.get('PROTOCOL', 'http')
+ENV_DOMAIN = os.environ.get('DOMAIN', '127.0.0.1')
+ENV_PORT = os.environ.get('PORT', '8000')
+ENV_PROTOCOL = os.environ.get('PROTOCOL', 'http')
 
 ALLOWED_HOSTS = [ENV_DOMAIN]
 
@@ -45,6 +54,37 @@ if ENV_PORT not in ['80', '443']:
     ALLOWED_HOSTS.append(ENV_DOMAIN + ':' + ENV_PORT)
 
 CSRF_TRUSTED_ORIGINS = [ENV_PROTOCOL + '://' + ENV_DOMAIN]
+
+# Demo mode configuration, this generates a SQLite database with demo data
+DEMO = str_to_bool(os.environ.get('DEMO', 'False'))
+if DEMO:
+    DEBUG = True  # Enable debug mode for demo
+    SECRET_KEY = get_random_secret_key() # Generate a random secret key for demo mode
+    DATABASE_TYPE = 'sqlite'
+
+# Database
+# https://docs.djangoproject.com/en/5.1/ref/settings/#databases
+DATABASE_TYPE = os.environ.get('DATABASE_TYPE', 'postgresql')
+if DATABASE_TYPE == 'postgresql':
+    # PostgreSQL settings
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.environ.get('DB_NAME', 'scholarships'),
+            'USER': os.environ.get('DB_USER', 'scholarships_user'),
+            'PASSWORD': os.environ.get('DB_PASSWORD', 'scholarships_password'),
+            'HOST': os.environ.get('DB_HOST', 'localhost'),
+            'PORT': os.environ.get('DB_PORT', '5432'),
+        }
+    }
+else:
+    # SQLite settings for demo mode
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 # Application definition
 
@@ -89,27 +129,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'becas.wsgi.application'
-
-
-# Database
-# https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config.get('DB_NAME'),
-        'USER': config.get('DB_USER'),
-        'PASSWORD': config.get('DB_PASSWORD'),
-        'HOST': config.get('DB_HOST'),
-        'PORT': config.get('DB_PORT'),
-    }
-}
-
-# Media files
-
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-MEDIA_URL = '/media/'
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
