@@ -1,4 +1,6 @@
 name: Run Django Tests
+permissions:
+  contents: read
 
 on:
   push:
