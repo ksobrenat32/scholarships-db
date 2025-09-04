@@ -1,10 +1,8 @@
 """
-WSGI config for becas project.
+WSGI config for the becas project.
 
-It exposes the WSGI callable as a module-level variable named ``application``.
-
-For more information on this file, see
-https://docs.djangoproject.com/en/5.1/howto/deployment/wsgi/
+This file configures the WSGI application for the project, which is used for
+synchronous web servers and applications.
 """
 
 import os

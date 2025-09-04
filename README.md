@@ -1,32 +1,89 @@
 # Scholarships Database
 
-Un programa diseñado para unificar la base de datos usada para la secretaría de becas de Guanajuato Sección 37.
+A web application designed to manage the scholarship database for the Guanajuato Section 37 of the SNTSA.
 
-## Demo
+## Features
 
-Para ejecutar el programa en modo demo, se utiliza SQLite como base de datos. Esto es útil para pruebas y desarrollo sin necesidad de configurar una base de datos PostgreSQL.
+-   **User Management**: Workers can register and log in to the system.
+-   **Worker and Scholar Profiles**: Workers can create and manage their profiles, as well as the profiles of their children (scholars).
+-   **Scholarship Applications**: Workers can submit three types of scholarship applications:
+    -   Academic Achievement
+    -   Academic Excellence
+    -   Special Cases
+-   **Application Tracking**: Workers can track the status of their applications.
+-   **Admin Interface**: Administrators can manage users, applications, and other data through the Django admin interface.
+-   **File Uploads**: The system handles file uploads for required documents (CURP, birth certificates, etc.).
+
+## Project Structure
+
+The project is a standard Django application with the following structure:
+
+-   `becas/`: The main Django project directory.
+    -   `settings.py`: Project settings.
+    -   `urls.py`: Project-level URL configuration.
+    -   `wsgi.py` and `asgi.py`: Server configuration.
+-   `becas_sntsa/`: The main application directory.
+    -   `models.py`: Database models.
+    -   `views.py`: View functions.
+    -   `forms.py`: Forms for data input.
+    -   `admin.py`: Admin interface configuration.
+    -   `templates/`: HTML templates.
+    -   `static/`: Static files (CSS, JavaScript, images).
+-   `manage.py`: Django's command-line utility.
+-   `Dockerfile`: Docker configuration for the application.
+-   `requirements.txt`: Python dependencies.
+
+## Models
+
+The application uses the following main models:
+
+-   **Trabajador**: Represents a worker, linked to a Django `User`.
+-   **Becario**: Represents a scholar (a worker's child).
+-   **Solicitud**: A base model for scholarship applications. It has three subclasses:
+    -   **SolicitudAprovechamiento**: For academic achievement scholarships.
+    -   **SolicitudExcelencia**: For academic excellence scholarships.
+    -   **SolicitudEspecial**: For special case scholarships.
+-   **Seccion, Puesto, Jurisdiccion, LugarAdscripcion, Grado**: Supporting models for worker and scholar data.
+
+## Business Logic
+
+### Registration and Application Process
+
+-   **June**: The application period opens. Workers can register, update their information, and create profiles for their children (scholars).
+-   Workers can then submit scholarship applications for their children. The system validates the data and ensures that a scholar does not have multiple pending applications of the same type.
+
+### Results
+
+-   **December**: The results for academic excellence scholarships are received (as PDF files). The status of the corresponding applications is updated to "accepted" or "rejected".
+-   **June (following year)**: The results for academic achievement and special case scholarships are received (as PDF files). The status of these applications is also updated.
+
+## Setup and Deployment
+
+### Demo Mode
+
+To run the application in demo mode (using SQLite), you can use the provided Docker image:
 
 ```bash
 podman run -p 8000:8000 ghcr.io/ksobrenat32/scholarships-db:latest
 ```
 
-## Producción
+This is useful for testing and development without setting up a PostgreSQL database.
 
-Para ejecutar el programa en un entorno de producción, se recomienda utilizar PostgreSQL como base de datos. Asegúrate de tener configurada la base de datos y las variables de entorno necesarias.
+### Production Mode
 
-Se recomienda correr con podman en pod para que la aplicación y la base de datos estén en el mismo pod, lo que facilita la comunicación entre ellos.
+For a production environment, it is recommended to use PostgreSQL as the database. The following instructions describe how to set up the application and database using Podman.
 
-### Configuración del Pod
+#### Pod Configuration
 
-Puedes crear un pod para la aplicación y la base de datos utilizando el siguiente comando:
+Create a pod to run the application and database containers together:
 
 ```bash
 podman pod create --name scholarships -p 8000:8000
 ```
 
-### Contenedores de la Aplicación y Base de Datos
+#### Database Container
 
-Para la base de datos, puedes utilizar el siguiente comando para iniciar un contenedor de PostgreSQL:
+Start a PostgreSQL container within the pod:
 
 ```bash
 podman run -d --name scholarships-db \
@@ -38,7 +95,9 @@ podman run -d --name scholarships-db \
     docker.io/library/postgres:latest
 ```
 
-Luego, puedes iniciar el contenedor de la aplicación:
+#### Application Container
+
+Start the application container, linking it to the database:
 
 ```bash
 podman run -d --name scholarships-app \
@@ -58,36 +117,19 @@ podman run -d --name scholarships-app \
     ghcr.io/ksobrenat32/scholarships-db:latest
 ```
 
-### Crear usuario administrador
+#### Create an Admin User
 
-Para crear un usuario administrador que pueda acceder al panel de administración, puedes ejecutar el siguiente comando:
+To access the Django admin interface, create a superuser:
 
 ```bash
 podman exec -it scholarships-app python manage.py createsuperuser
 ```
 
-### Acceso a la Aplicación
+### Quadlet Files for Systemd
 
-En caso de que estés utilizando un proxy inverso, asegúrate de que esté configurado correctamente para redirigir las solicitudes al contenedor de la aplicación. El puerto default es `8000`, pero puedes cambiarlo según tus necesidades.
+For easier management, you can use quadlet files to define the containers as systemd services. Create the following files in `~/.config/containers/systemd/`:
 
-Ejemplo con caddy:
-
-```Caddyfile
-mi_dominio.com {
-    reverse_proxy localhost:8000
-}
-```
-
-### Archivos quadlet
-
-Para administrar los contenedores de manera más sencilla, puedes utilizar archivos quadlet. Estos archivos permiten definir la configuración del contenedor de manera declarativa.
-
-En primer lugar debes crear un archivo de configuración. Te puedes guiar del archivo `.env.example` para definir las variables de entorno necesarias.
-
-Los archivos de configuración deben estar en `~/.config/containers/systemd/` y deben tener la extensión `.container` o `.pod`.
-
-`scholarships.pod`:
-
+**`scholarships.pod`**
 ```systemd
 [Pod]
 PodName=scholarships
@@ -97,8 +139,7 @@ PublishPort=8000:8000
 WantedBy=default.target
 ```
 
-`scholarships-db.container`:
-
+**`scholarships-db.container`**
 ```systemd
 [Unit]
 Description=Scholarships database container
@@ -115,8 +156,7 @@ Volume=/path/to/your/db:/var/lib/postgresql/data:z
 WantedBy=default.target
 ```
 
-`scholarships-app.container`:
-
+**`scholarships-app.container`**
 ```systemd
 [Unit]
 Description=Scholarships application container
@@ -134,22 +174,8 @@ Volume=/path/to/your/media:/code/media:z
 WantedBy=default.target
 ```
 
-Una vez que tengas estos archivos en `~/.config/containers/systemd/`, puedes iniciar el pod y los contenedores con:
+After creating these files, you can start the pod and containers with:
 
 ```bash
 systemctl --user start scholarships-pod.service
 ```
-
-## Reglas de negocio
-
-### Registro
-
-Entran solicitudes en Junio. Se llenan formularios de solicitud de cada unidad con los datos de los becarios y trabajadores.
-
-Se registran nuevos trabajadores y becarios. Se actualizan los datos de los usuarios ya existentes con los nuevos datos, nos basamos en el curp. Se generan solicitudes de becas correspondientes.
-
-### Resultados
-
-En diciembre se reciben archivos pdf con el resultado de becas de excelencia. Se actualizan las solicitudes de becas con aceptación o rechazo.
-
-En junio se reciben archivos pdf con el resultado de becas de aprovechamiento y especiales. Se actualizan las solicitudes de becas con aceptación o rechazo.

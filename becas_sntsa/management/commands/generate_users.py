@@ -1,11 +1,24 @@
-# Script to generate users for testing as json
+"""
+A Django management command to generate users, scholars, and applications for testing purposes.
+"""
 from django.core.management.base import BaseCommand
 import random
 from faker import Faker
 from becas_sntsa.models import User, Trabajador, Becario, Solicitud, Seccion, Puesto, Jurisdiccion, LugarAdscripcion, Grado, SolicitudAprovechamiento, SolicitudExcelencia, SolicitudEspecial
 
-# Generate Mexican CURP
+
 def generate_curp(nombre, apellido_paterno, apellido_materno):
+    """
+    Generates a random Mexican CURP.
+
+    Args:
+        nombre (str): The first name.
+        apellido_paterno (str): The paternal last name.
+        apellido_materno (str): The maternal last name.
+
+    Returns:
+        str: A randomly generated CURP.
+    """
     curp = ""
     # First letter of the last name
     curp += apellido_paterno[0].upper()
@@ -43,8 +56,14 @@ def generate_curp(nombre, apellido_paterno, apellido_materno):
 
     return curp
 
-# Create the users with a trabajador
+
 def create_trabajador() -> Trabajador:
+    """
+    Creates a new worker with random data.
+
+    Returns:
+        Trabajador: The newly created worker.
+    """
     # Create a Faker instance
     fake = Faker('es_MX')
 
@@ -99,7 +118,17 @@ def create_trabajador() -> Trabajador:
     trabajador.save()
     return trabajador
 
+
 def create_becario(trabajador: Trabajador) -> Becario:
+    """
+    Creates a new scholar associated with a worker.
+
+    Args:
+        trabajador (Trabajador): The worker to associate the scholar with.
+
+    Returns:
+        Becario: The newly created scholar.
+    """
     # Create a Faker instance
     fake = Faker('es_MX')
 
@@ -120,12 +149,22 @@ def create_becario(trabajador: Trabajador) -> Becario:
     becario.save()
     return becario
 
+
 def create_solicitud(becario: Becario) -> Solicitud:
+    """
+    Creates a new scholarship application for a scholar.
+
+    Args:
+        becario (Becario): The scholar for whom the application is made.
+
+    Returns:
+        Solicitud: The newly created application.
+    """
     # Create a Faker instance
     fake = Faker('es_MX')
 
     # Create the solicitud
-    fecha_solicitud=fake.date()
+    fecha_solicitud = fake.date()
     estado = random.choice(Solicitud._meta.get_field('estado').choices)[0]
 
     # If estado is 'P', check if the becario has any pending solicitud
@@ -139,7 +178,8 @@ def create_solicitud(becario: Becario) -> Solicitud:
     else:
         notas = ""
 
-    type = random.choice([SolicitudAprovechamiento, SolicitudExcelencia, SolicitudEspecial])
+    type = random.choice(
+        [SolicitudAprovechamiento, SolicitudExcelencia, SolicitudEspecial])
 
     # Solicitud Aprovechamiento, Excelencia or Especial
     if type == SolicitudAprovechamiento:
@@ -185,10 +225,17 @@ def create_solicitud(becario: Becario) -> Solicitud:
     solicitud.save()
     return solicitud
 
+
 class Command(BaseCommand):
+    """
+    A Django management command to generate test data.
+    """
     help = 'Generate users for testing'
 
     def add_arguments(self, parser):
+        """
+        Adds command-line arguments to the command.
+        """
         parser.add_argument(
             '--num_users',
             type=int,
@@ -221,6 +268,9 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
+        """
+        The main logic of the command.
+        """
         num_users = options['num_users']
         min_becarios = options['min_becarios']
         max_becarios = options['max_becarios']
@@ -241,13 +291,15 @@ class Command(BaseCommand):
             for _ in range(num_becarios):
                 becario = create_becario(trabajador)
                 # Create from min_solicitudes to max_solicitudes Solicitudes for each Becario
-                num_solicitudes = random.randint(min_solicitudes, max_solicitudes)
+                num_solicitudes = random.randint(
+                    min_solicitudes, max_solicitudes)
                 for _ in range(num_solicitudes):
                     create_solicitud(becario)
-            
+
             if (i + 1) % 5 == 0:
                 self.stdout.write(f'Created {i + 1}/{num_users} users...')
 
         self.stdout.write(
-            self.style.SUCCESS(f'Successfully created {num_users} users with their becarios and solicitudes!')
+            self.style.SUCCESS(
+                f'Successfully created {num_users} users with their becarios and solicitudes!')
         )
