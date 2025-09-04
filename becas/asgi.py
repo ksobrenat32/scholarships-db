@@ -1,10 +1,8 @@
 """
-ASGI config for becas project.
+ASGI config for the becas project.
 
-It exposes the ASGI callable as a module-level variable named ``application``.
-
-For more information on this file, see
-https://docs.djangoproject.com/en/5.1/howto/deployment/asgi/
+This file configures the ASGI application for the project, which is used for
+asynchronous web servers and applications.
 """
 
 import os
