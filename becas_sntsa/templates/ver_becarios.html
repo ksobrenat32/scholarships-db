@@ -8,6 +8,7 @@
             <tr>
                 <th>Nombre</th>
                 <th>CURP</th>
+                <th>Acciones</th>
             </tr>
         </thead>
         <tbody>
@@ -15,6 +16,9 @@
             <tr>
                 <td>{{ becario.nombre }} {{ becario.apellido_paterno }} {{ becario.apellido_materno }}</td>
                 <td>{{ becario.curp }}</td>
+                <td>
+                    <a href="{% url 'editar_becario' becario.id %}" class="btn btn-primary btn-sm">Editar</a>
+                </td>
             </tr>
             {% endfor %}
         </tbody>
