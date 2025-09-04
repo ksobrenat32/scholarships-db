@@ -263,11 +263,15 @@ def download_file(request, file_path):
 
     normalized_path = os.path.normpath(file_path)
     file_full_path = os.path.join(settings.MEDIA_ROOT, normalized_path)
-    if not file_full_path.startswith(settings.MEDIA_ROOT):
+
+    # Resolve the real path to prevent directory traversal
+    real_path = os.path.realpath(file_full_path)
+
+    if not real_path.startswith(os.path.realpath(settings.MEDIA_ROOT)):
         return HttpResponseForbidden("Invalid file path.")
 
-    if os.path.exists(file_full_path):
-        return FileResponse(open(file_full_path, 'rb'))
+    if os.path.exists(real_path):
+        return FileResponse(open(real_path, 'rb'))
     else:
         return HttpResponseForbidden("File not found.")
 

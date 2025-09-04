@@ -84,7 +84,17 @@ class Becario(models.Model):
         return self.curp[10]
 
     def get_fecha_nacimiento(self) -> str:
-        return "{}-{}-{}".format(self.curp[4:8], self.curp[8:10], self.curp[6:8])
+        year = self.curp[4:6]
+        month = self.curp[6:8]
+        day = self.curp[8:10]
+
+        # This is a simplification. It assumes that years > '23' belong to the 20th century.
+        if int(year) > 23:
+            full_year = "19" + year
+        else:
+            full_year = "20" + year
+
+        return "{}-{}-{}".format(full_year, month, day)
 
 # Clase para solicitud de beca
 class Solicitud(models.Model):
