@@ -1,11 +1,11 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
 from django.contrib.auth import login, logout, authenticate
 from django.db import IntegrityError
 from django.contrib.auth.decorators import login_required
-from becas_sntsa.forms import TrabajadorCreateForm, BecarioCreateForm, SolicitudAprovechamientoCreateForm, SolicitudExcelenciaCreateForm, SolicitudEspecialCreateForm
-from becas_sntsa.models import Trabajador, Becario, SolicitudAprovechamiento, SolicitudExcelencia, SolicitudEspecial
+from becas_sntsa.forms import TrabajadorCreateForm, BecarioCreateForm, SolicitudAprovechamientoCreateForm, SolicitudExcelenciaCreateForm, SolicitudEspecialCreateForm, TrabajadorEditForm, BecarioEditForm
+from becas_sntsa.models import Trabajador, Becario, Solicitud, SolicitudAprovechamiento, SolicitudExcelencia, SolicitudEspecial
 from django.http import HttpResponseForbidden, FileResponse
 from django.conf import settings
 import os
@@ -297,3 +297,41 @@ def ver_solicitudes(request):
         'solicitudes_especiales': solicitudes_especiales
     })
 
+@login_required
+@trabajador_required
+def editar_usuario(request):
+    trabajador = request.user.trabajador
+    if request.method == 'GET':
+        form = TrabajadorEditForm(instance=trabajador)
+        return render(request, 'editar_usuario.html', {'form': form})
+    elif request.method == 'POST':
+        form = TrabajadorEditForm(request.POST, request.FILES, instance=trabajador)
+        if form.is_valid():
+            form.save()
+            return redirect('becas')
+        else:
+            return render(request, 'editar_usuario.html', {'form': form})
+
+@login_required
+@trabajador_required
+@approved_required
+def editar_becario(request, becario_id):
+    becario = get_object_or_404(Becario, id=becario_id, trabajador=request.user)
+
+    # Check for valid solicitudes
+    valid_solicitudes = Solicitud.objects.filter(becario=becario, estado__in=['R', 'P', 'T']).exists()
+    if valid_solicitudes:
+        return render(request, 'editar_becario.html', {
+            'error': 'Este becario tiene una solicitud en curso o aprobada. No se puede editar. Por favor, crea un nuevo becario si es necesario.'
+        })
+
+    if request.method == 'GET':
+        form = BecarioEditForm(instance=becario)
+        return render(request, 'editar_becario.html', {'form': form, 'becario': becario})
+    elif request.method == 'POST':
+        form = BecarioEditForm(request.POST, request.FILES, instance=becario)
+        if form.is_valid():
+            form.save()
+            return redirect('ver_becarios')
+        else:
+            return render(request, 'editar_becario.html', {'form': form, 'becario': becario})

@@ -15,6 +15,19 @@ class BecarioCreateForm(ModelForm):
         model = Becario
         fields = ['nombre', 'apellido_paterno', 'apellido_materno', 'curp', 'curp_archivo', 'acta_nacimiento']
 
+class TrabajadorEditForm(ModelForm):
+    class Meta:
+        model = Trabajador
+        fields = ['curp_archivo', 'telefono', 'correo']
+        widgets = {
+            'correo': forms.EmailInput(),
+        }
+
+class BecarioEditForm(ModelForm):
+    class Meta:
+        model = Becario
+        fields = ['nombre', 'apellido_paterno', 'apellido_materno', 'curp', 'curp_archivo', 'acta_nacimiento']
+
 class SolicitudAprovechamientoCreateForm(forms.ModelForm):
     becario = forms.ModelChoiceField(queryset=Becario.objects.none())
 
