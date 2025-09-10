@@ -1,4 +1,6 @@
 import os
+import django
+from packaging.version import parse
 from django.conf import settings
 from django.test import TestCase
 from django.contrib.auth.models import User
@@ -366,3 +368,10 @@ class DownloadFileViewTest(TestCase):
         file_path = os.path.join(settings.MEDIA_ROOT, self.trabajador.curp_archivo.name)
         if os.path.exists(file_path):
             os.remove(file_path)
+
+class DjangoVersionTest(TestCase):
+    def test_django_version(self):
+        """
+        Tests that the Django version is at least 5.2.6.
+        """
+        self.assertTrue(parse(django.get_version()) >= parse('5.2.6'))
