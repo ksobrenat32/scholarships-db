@@ -1,5 +1,5 @@
 asgiref==3.9.1
-Django==5.2.6
+Django==5.2.8
 Faker==37.6.0
 gunicorn==23.0.0
 packaging==25.0
