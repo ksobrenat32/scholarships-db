@@ -3,13 +3,25 @@
 
 {% block content %}
 
-<div class="row">
-    <div class="col-md-12 text-center">
-        <p>El usuario se encuentra en espera de verificación de empleo.</p>
+<div class="max-w-2xl mx-auto py-24 text-center">
+    <div class="w-32 h-32 rounded-full bg-secondary-container mx-auto flex items-center justify-center mb-8 shadow-inner border-4 border-surface-container-highest">
+        <span class="material-symbols-outlined text-6xl text-secondary" style="font-variation-settings: 'FILL' 1;">hourglass_empty</span>
+    </div>
 
-        <p>Por favor, espere a que el administrador verifique su información.</p>
-        <p>Una vez verificado, podrá acceder a las funcionalidades de la aplicación.</p>
-        <p>Si tiene alguna pregunta, por favor contacte al administrador.</p>
+    <h1 class="font-headline text-4xl font-extrabold text-on-surface tracking-tight mb-6">Verificación en Proceso</h1>
+
+    <div class="bg-surface-container-low p-8 rounded-[2rem] border border-outline-variant/20 shadow-sm space-y-4">
+        <p class="text-on-surface-variant text-lg">Su cuenta se encuentra actualmente en <span class="font-bold text-primary">espera de verificación de empleo</span>.</p>
+        <div class="h-px bg-outline-variant/20 my-6"></div>
+        <p class="text-on-surface-variant">Por favor, espere a que el administrador verifique su información. Una vez que su perfil sea aprobado, podrá acceder a todas las funcionalidades de la aplicación para gestionar y registrar sus becas.</p>
+        <p class="text-on-surface-variant font-medium">Si tiene alguna pregunta, por favor contacte a su delegación sindical o al administrador del sistema.</p>
+    </div>
+
+    <div class="mt-12 flex justify-center gap-4">
+        <a href="{% url 'home' %}" class="bg-surface-container-high px-8 py-3 font-bold text-on-surface hover:bg-surface-container-highest transition-colors rounded-xl flex items-center gap-2">
+            <span class="material-symbols-outlined text-sm">home</span>
+            Volver al Inicio
+        </a>
     </div>
 </div>
 

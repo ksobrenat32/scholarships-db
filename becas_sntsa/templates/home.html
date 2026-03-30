@@ -3,42 +3,169 @@
 
 {% block content %}
 
-<div class="row">
-    <div class="col-md-12 text-center">
-        <img src="{% static 'images/logo_full.jpeg' %}" alt="Logo" style="height: 200px;">
+<!-- Hero Section: Intentional Asymmetry -->
+<section class="relative min-h-[500px] flex items-center overflow-hidden bg-primary-container rounded-[2rem] mb-12 shadow-sm">
+    <div class="absolute inset-0 opacity-40">
+        <img alt="Background Academic Architecture" class="w-full h-full object-cover" data-alt="Wide angle view of a modern university library with glass walls and sunlight streaming through geometric windows" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA4vskB56q2WVC0aPhT85fOMhB-8sz5mB2afnLOV5Bx8OQV56O1tNFXieP9_qqaK9HCrKhg5DOO2w_SZfAQ1l7aHzGRQLDTF5Ydb68Fq8VmzTrrBgBS7EFzBG-fC7y2HV0yoN-8P6_peHc4GXZUxRiFzr73_5-Y0hbhE1XQvvT5vMU43m1o_lQFjQvX89kqdXTHuZ7p8H_RKwvhBwxtHZ9p0C2Ce6HifQpc86UF2v8XbcNk-kCeclWa9RNT6nCgNP9kcYpSccmb4quc"/>
     </div>
-    <div class="col-md-12">
-        <h1>Becas SNTSA</h1>
-        <p>
-            El FONABE se constituye con los recursos de la Secretaria de Salud y el Sindicato, conforme al monto establecido en el Artículo 116 de las Condiciones Generales de Trabajo vigentes, y se depositará de forma mancomunada en cuenta bancaria independiente, a nombre del Sindicato.
-        </p>
-
-        <p>
-            La Comisión Nacional, tendrá la atribución para determinar el monto de cada una de las modalidades de beca, y el Sindicato hará llegar y comprobará el recurso económico del pago de la beca, mediante un instrumento de una institución bancaria, en una exhibición.
-        </p>
+    <div class="container mx-auto px-8 relative z-10 grid md:grid-cols-12 gap-12 py-12">
+        <div class="md:col-span-7 flex flex-col justify-center">
+            <h1 class="text-white font-headline font-extrabold text-5xl md:text-6xl leading-tight mb-8 tracking-tighter">
+                Impulsando tu <br/>futuro académico
+            </h1>
+            <p class="text-on-primary-container font-body text-xl max-w-xl mb-12 leading-relaxed">
+                El FONABE se constituye con los recursos de la Secretaria de Salud y el Sindicato. Transformamos el acceso a la educación superior para los miembros de SNTSA. Excelencia, compromiso y apoyo para tu desarrollo profesional.
+            </p>
+            <div class="flex flex-wrap gap-4">
+                {% if user.is_authenticated %}
+                <a href="{% url 'becas' %}" class="bg-gradient-to-br from-primary to-primary-container text-white px-10 py-5 rounded-xl font-headline font-bold text-lg shadow-xl hover:scale-95 transition-all active:opacity-80 inline-block text-center">
+                    Ver Dashboard
+                </a>
+                {% else %}
+                <a href="{% url 'signin' %}" class="bg-gradient-to-br from-primary to-primary-container text-white px-10 py-5 rounded-xl font-headline font-bold text-lg shadow-xl hover:scale-95 transition-all active:opacity-80 inline-block text-center">
+                    Iniciar Sesión
+                </a>
+                {% endif %}
+                <a href="#requisitos" class="border border-white/30 text-white backdrop-blur-md px-10 py-5 rounded-xl font-headline font-bold text-lg hover:bg-white/10 transition-colors inline-block text-center">
+                    Ver Requisitos
+                </a>
+            </div>
+        </div>
+        <!-- Glassmorphism Floating Element -->
+        <div class="hidden md:flex md:col-span-5 items-center justify-center">
+            <div class="glass-card p-8 rounded-full shadow-2xl border border-white/20 max-w-md w-full">
+                <div class="flex flex-col gap-6">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-full bg-primary-fixed flex items-center justify-center">
+                            <span class="material-symbols-outlined text-primary" data-icon="school">school</span>
+                        </div>
+                        <div>
+                            <p class="text-on-surface font-headline font-bold">Convocatoria Activa</p>
+                            <p class="text-on-surface-variant text-sm">Registro abierto actualmente</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+</section>
 
-    <div class="col-md-12">
-        <h2>¿Qué es una beca SNTSA?</h2>
-        <p>
-            Es la aportación económica que se asigna a la persona becaria por parte de la Secretaría de Salud y el Sindicato, con motivo de su aprovechamiento escolar, excelencia académica, o educación especial.Una beca es un apoyo económico que se otorga a los trabajadores y sus familias para que puedan continuar con sus estudios.
-        </p>
+<!-- Requirements Section: Bento-inspired Tonal Layering -->
+<section id="requisitos" class="py-12">
+    <div class="max-w-7xl mx-auto">
+        <div class="mb-12">
+            <span class="text-primary font-headline font-bold tracking-widest uppercase text-xs">Información</span>
+            <h2 class="text-4xl font-headline font-extrabold text-on-surface mt-2 tracking-tight">Acerca de las Becas SNTSA</h2>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <div class="bg-surface-container-lowest p-8 rounded-2xl shadow-sm border border-outline-variant/20">
+                <h3 class="text-xl font-headline font-bold text-on-surface mb-4">¿Qué es una beca SNTSA?</h3>
+                <p class="text-on-surface-variant leading-relaxed">
+                    Es la aportación económica que se asigna a la persona becaria por parte de la Secretaría de Salud y el Sindicato, con motivo de su aprovechamiento escolar, excelencia académica, o educación especial. Una beca es un apoyo económico que se otorga a los trabajadores y sus familias para que puedan continuar con sus estudios.
+                </p>
+            </div>
+            <div class="bg-surface-container-lowest p-8 rounded-2xl shadow-sm border border-outline-variant/20">
+                <h3 class="text-xl font-headline font-bold text-on-surface mb-4">Atribuciones</h3>
+                <p class="text-on-surface-variant leading-relaxed">
+                    La Comisión Nacional tendrá la atribución para determinar el monto de cada una de las modalidades de beca, y el Sindicato hará llegar y comprobará el recurso económico del pago de la beca, mediante un instrumento de una institución bancaria, en una exhibición.
+                </p>
+            </div>
+        </div>
+
+        <div class="mb-12">
+            <h2 class="text-3xl font-headline font-extrabold text-on-surface mt-2 tracking-tight mb-8">Programas y Requisitos</h2>
+            <p class="text-on-surface-variant mb-8 text-lg">
+                Los procedimientos son aplicables para el otorgamiento de las Becas por Aprovechamiento Escolar, para las Becas de Excelencia Académica y para las Becas de Educación Especial; que se autoricen para el personal activo (o para uno de sus hijos o hijas).
+            </p>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-8">
+            <!-- Card 1 -->
+            <div class="group bg-surface-container-lowest p-10 rounded-xl hover:bg-primary transition-all duration-500 hover:-translate-y-2 border border-outline-variant/20 shadow-sm">
+                <div class="mb-8 w-14 h-14 rounded-xl bg-surface-container flex items-center justify-center group-hover:bg-white/20">
+                    <span class="material-symbols-outlined text-primary group-hover:text-white" data-icon="trending_up">trending_up</span>
+                </div>
+                <h3 class="text-2xl font-headline font-bold text-on-surface mb-4 group-hover:text-white">Aprovechamiento</h3>
+                <p class="text-on-surface-variant mb-8 leading-relaxed group-hover:text-white/80">
+                    Para quienes cursen o se encuentren cursando la educación escolar básica (Primaria), la media básica (Secundaria), o la media superior (Bachillerato).
+                </p>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="group bg-surface-container-low p-10 rounded-xl hover:bg-primary transition-all duration-500 hover:-translate-y-2">
+                <div class="mb-8 w-14 h-14 rounded-xl bg-surface-container flex items-center justify-center group-hover:bg-white/20">
+                    <span class="material-symbols-outlined text-primary group-hover:text-white" data-icon="workspace_premium" style="font-variation-settings: 'FILL' 1;">workspace_premium</span>
+                </div>
+                <h3 class="text-2xl font-headline font-bold text-on-surface mb-4 group-hover:text-white">Excelencia</h3>
+                <p class="text-on-surface-variant mb-8 leading-relaxed group-hover:text-white/80">
+                    Para quienes cursen Técnico Superior Universitario (TSU), educación superior (Licenciaturas) o algún posgrado (Especialidad, Maestría o Doctorado).
+                </p>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="group bg-surface-container p-10 rounded-xl hover:bg-primary transition-all duration-500 hover:-translate-y-2">
+                <div class="mb-8 w-14 h-14 rounded-xl bg-surface-container flex items-center justify-center group-hover:bg-white/20">
+                    <span class="material-symbols-outlined text-primary group-hover:text-white" data-icon="stars" style="font-variation-settings: 'FILL' 1;">stars</span>
+                </div>
+                <h3 class="text-2xl font-headline font-bold text-on-surface mb-4 group-hover:text-white">Educación Especial</h3>
+                <p class="text-on-surface-variant mb-8 leading-relaxed group-hover:text-white/80">
+                    Para quienes cursen o reciban algún tipo de educación impartida por alguna institución de educación especializada por motivo de su discapacidad.
+                </p>
+            </div>
+        </div>
     </div>
+</section>
 
-    <div class="col-md-12">
-        <h2>¿Quiénes pueden solicitar una beca?</h2>
-        <p>Los trabajadores y sus familias que cumplan con los requisitos establecidos en la convocatoria.</p>
-        <p>
-            Los procedimientos son aplicables para el otorgamiento de las Becas por Aprovechamiento Escolar, para las Becas de Excelencia Académica y para las Becas de Educación Especial; que se autoricen para el personal activo (o para uno de sus hijos o hijas) y que para el caso de las primeras, cursen o se encuentren cursando la educación escolar básica (Primaria), la media básica (Secundaria), la media superior (Bachillerato); para el caso de las Becas de Excelencia Académica que cursen o se encuentren cursando la de Técnico Superior Universitario (TSU), la educación superior (Licenciaturas) o algún posgrado (Especialidad, Maestría o Doctorado), así como para las denominadas de “Educación Especial” y que cursen o reciban algún tipo de educación (Según sea el caso), impartida por alguna institución de educación especializada por motivo de su discapacidad.
-        </p>
-        <p>
-            Tendrá derecho a participar en la asignación de la beca por aprovechamiento escolar, tanto el personal, así como una de sus hijas o hijos, pudiendo ser acumulativa solo con una beca de educación especial, en el caso de que la persona becaria sea el personal
-        </p>
+<!-- Steps: Asymmetrical Vertical Timeline -->
+<section class="py-24 bg-surface-container-lowest rounded-[2rem] my-12 px-8 shadow-sm border border-outline-variant/10">
+    <div class="max-w-6xl mx-auto">
+        <div class="grid md:grid-cols-2 gap-20 items-center">
+            <div>
+                <h2 class="text-4xl font-headline font-extrabold text-on-surface leading-tight tracking-tighter mb-8">
+                    ¿Cómo solicitar una beca?
+                </h2>
+                <p class="text-on-surface-variant text-lg font-body leading-relaxed mb-12">
+                    Para solicitar una beca, los trabajadores y sus familias deben registrarse en el sistema y completar el formulario de solicitud de beca.
+                </p>
+                <div class="relative overflow-hidden rounded-xl h-64 shadow-lg">
+                    <img alt="Student Working" class="w-full h-full object-cover" data-alt="Top view of a student working on a laptop with notebooks and coffee on a clean white desk, bright morning light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDXtql7pLkyj47FfvpZdfv-uA9mZCdbdFNkTrgfsf_BZUoVuDv6WjK5vWlpDlxhWGZF0rwwA2QnrWDGFlM176cMRnQZ4riU1lHt5N2JLL9KT12msGgf2mv9m9m8cQAvmhZqAhKdCiPM-moXHmCByW7mWc9rk_A_SmxrZHBIfLnO9cZeJgeegcCvoyLoudqAGDgbdxZ1IGh8epo2OiGVS-Ztn0Yn5FfCenWH89j8dKNJXdSLlK8CakOFMeVRO-QZuBUOxF61gllI2RRc"/>
+                </div>
+            </div>
+
+            <div class="space-y-12 relative">
+                <!-- Timeline Line -->
+                <div class="absolute left-6 top-4 bottom-4 w-[2px] bg-primary-fixed"></div>
+
+                <!-- Step 1 -->
+                <div class="relative pl-16">
+                    <div class="absolute left-0 top-0 w-12 h-12 rounded-full bg-primary flex items-center justify-center z-10 shadow-lg">
+                        <span class="text-white font-headline font-bold">01</span>
+                    </div>
+                    <h4 class="text-xl font-headline font-bold text-on-surface mb-2">Registro de Usuario</h4>
+                    <p class="text-on-surface-variant">Crea tu cuenta institucional utilizando tu CURP y contraseña.</p>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="relative pl-16">
+                    <div class="absolute left-0 top-0 w-12 h-12 rounded-full bg-white border-2 border-primary-fixed flex items-center justify-center z-10">
+                        <span class="text-primary font-headline font-bold">02</span>
+                    </div>
+                    <h4 class="text-xl font-headline font-bold text-on-surface mb-2">Completa tu Perfil</h4>
+                    <p class="text-on-surface-variant">Registra tus datos como trabajador y da de alta a los becarios de tu familia.</p>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="relative pl-16">
+                    <div class="absolute left-0 top-0 w-12 h-12 rounded-full bg-white border-2 border-primary-fixed flex items-center justify-center z-10">
+                        <span class="text-primary font-headline font-bold">03</span>
+                    </div>
+                    <h4 class="text-xl font-headline font-bold text-on-surface mb-2">Envía Solicitud</h4>
+                    <p class="text-on-surface-variant">Selecciona el tipo de beca y carga los documentos solicitados para revisión.</p>
+                </div>
+            </div>
+        </div>
     </div>
-
-    <div class="col-md-12">
-        <h2>¿Cómo solicitar una beca?</h2>
-        <p>Para solicitar una beca, los trabajadores y sus familias deben registrarse en el sistema y completar el formulario de solicitud de beca.</p>
-</div>
+</section>
 
 {% endblock %}

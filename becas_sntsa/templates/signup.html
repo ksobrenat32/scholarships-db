@@ -3,39 +3,93 @@
 
 {% block content %}
 
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="p-4 bg-secondary text-white rounded">
-            <h2 class="text-center">Registrar nuevo usuario</h2>
+<div class="flex min-h-[80vh] bg-surface rounded-[2rem] overflow-hidden shadow-lg border border-outline-variant/10">
+    <!-- Visual/Brand Side (Split Screen Layout) -->
+    <div class="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-primary-container items-center justify-center p-24">
+        <div class="absolute inset-0 opacity-20" data-alt="Modern university library architecture with clean lines and soft natural light hitting wooden desks and glass partitions" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDw_ai_b2GL23ZZpOGaz61NWXCGwQQU_CGAWH3Wh0Gy30L9uMagT0SOPtPOaYy9_Trfb9s03lra6t6p8CIpl1ZZ-aieguaKNthZhd2dLHvIXihBm1WlCg7RKhxHPPykV4VpcwjSMaQ3OaXjILljtHMhu1PI6_l5nGCIjbfKhLdE0kvxVbeZofGtv2YhlMqxLoRm7VBKw4pvBIY1Um2UePDQ7lsZhEotVT54mx5EjYA328SuDZc6a1vCqW9x0EagaCI0Fsq1Ed_OGqX8'); background-size: cover; background-position: center;">
+        </div>
+        <div class="absolute inset-0 bg-gradient-to-br from-primary/80 to-primary-container/90"></div>
+        <div class="relative z-10 max-w-lg">
+            <div class="mb-8 inline-flex items-center gap-3">
+                <div class="w-12 h-12 rounded-xl bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20">
+                    <span class="material-symbols-outlined text-white text-3xl">school</span>
+                </div>
+                <span class="font-headline font-extrabold text-2xl tracking-tighter text-white">Becas SNTSA</span>
+            </div>
+            <h1 class="font-headline text-5xl font-extrabold text-white leading-tight mb-6">Únete a nuestra comunidad.</h1>
+            <p class="text-on-primary-container text-lg leading-relaxed font-light">
+                Crea tu cuenta en la plataforma exclusiva de becas para el Sindicato Nacional de Trabajadores de la Secretaría de Salud y comienza a gestionar tu futuro.
+            </p>
+        </div>
+    </div>
+
+    <!-- Form Side -->
+    <div class="w-full lg:w-1/2 flex items-center justify-center p-8 md:p-16 lg:p-24 bg-surface">
+        <div class="w-full max-w-md">
+            <!-- Mobile Logo Header -->
+            <div class="lg:hidden mb-12 flex flex-col items-center text-center">
+                <span class="material-symbols-outlined text-primary text-5xl mb-4">school</span>
+                <h2 class="font-headline font-extrabold text-3xl tracking-tighter text-primary">Becas SNTSA</h2>
+            </div>
+            <div class="mb-10">
+                <h3 class="font-headline text-3xl font-extrabold text-on-surface mb-2">Crear cuenta</h3>
+                <p class="text-on-surface-variant font-medium">Registra tu CURP para iniciar el proceso.</p>
+            </div>
 
             {% if error %}
-            <div class="alert alert-danger" role="alert">
+            <div class="bg-error-container text-on-error-container p-4 rounded-xl mb-6 font-medium text-sm border border-error/20 flex items-center gap-2">
+                <span class="material-symbols-outlined text-error">error</span>
                 {{ error }}
             </div>
             {% endif %}
 
-            <form action="{% url 'signup' %}" method="post" class="mt-4">
+            <form action="{% url 'signup' %}" method="post" class="space-y-6">
                 {% csrf_token %}
 
-                <!-- Sign Up form -->
-
-                <div class="mb-1">
-                    <label for="username" class="form-label">CURP del trabajador</label>
-                    {{ form.username|add_class:"form-control" }}
+                <!-- CURP Input Group -->
+                <div class="group">
+                    <label class="block text-xs font-semibold uppercase tracking-widest text-on-surface-variant mb-2 ml-1" for="id_username">CURP del trabajador</label>
+                    <div class="relative flex items-center bg-surface-container-high rounded-xl transition-all duration-300 focus-within:ring-2 focus-within:ring-primary/20">
+                        <span class="material-symbols-outlined absolute left-4 text-outline">person_outline</span>
+                        {{ form.username|add_class:"w-full bg-transparent border-none py-4 pl-12 pr-4 rounded-xl focus:ring-0 text-on-surface placeholder:text-outline/60 text-sm font-medium" }}
+                    </div>
                 </div>
 
-                <div class="mb-1">
-                    <label for="password1" class="form-label">Contraseña</label>
-                    {{ form.password1|add_class:"form-control" }}
+                <!-- Password 1 Input Group -->
+                <div class="group">
+                    <div class="flex justify-between items-center mb-2 ml-1">
+                        <label class="block text-xs font-semibold uppercase tracking-widest text-on-surface-variant" for="id_password1">Contraseña</label>
+                    </div>
+                    <div class="relative flex items-center bg-surface-container-high rounded-xl transition-all duration-300 focus-within:ring-2 focus-within:ring-primary/20">
+                        <span class="material-symbols-outlined absolute left-4 text-outline">lock_outline</span>
+                        {{ form.password1|add_class:"w-full bg-transparent border-none py-4 pl-12 pr-12 rounded-xl focus:ring-0 text-on-surface placeholder:text-outline/60 text-sm font-medium" }}
+                    </div>
                 </div>
 
-                <div class="mb-1">
-                    <label for="password2" class="form-label">Confirmar contraseña</label>
-                    {{ form.password2|add_class:"form-control" }}
+                <!-- Password 2 Input Group -->
+                <div class="group">
+                    <div class="flex justify-between items-center mb-2 ml-1">
+                        <label class="block text-xs font-semibold uppercase tracking-widest text-on-surface-variant" for="id_password2">Confirmar Contraseña</label>
+                    </div>
+                    <div class="relative flex items-center bg-surface-container-high rounded-xl transition-all duration-300 focus-within:ring-2 focus-within:ring-primary/20">
+                        <span class="material-symbols-outlined absolute left-4 text-outline">lock_reset</span>
+                        {{ form.password2|add_class:"w-full bg-transparent border-none py-4 pl-12 pr-12 rounded-xl focus:ring-0 text-on-surface placeholder:text-outline/60 text-sm font-medium" }}
+                    </div>
                 </div>
 
-                <button type="submit" class="btn btn-primary">Registrarse</button>
+                <!-- Submit Button -->
+                <button class="w-full bg-gradient-to-br from-primary to-primary-container text-white font-headline font-bold py-4 rounded-xl shadow-[0_12px_40px_rgba(25,28,30,0.06)] hover:opacity-95 transition-all active:scale-[0.98] flex items-center justify-center gap-2 mt-8" type="submit">
+                    Registrarse
+                    <span class="material-symbols-outlined text-xl">person_add</span>
+                </button>
             </form>
+
+            <div class="mt-10 text-center">
+                <p class="text-on-surface-variant font-medium mb-4">
+                    ¿Ya tienes cuenta?
+                    <a class="text-primary font-bold hover:underline underline-offset-4 ml-1" href="{% url 'signin' %}">Inicia sesión</a>
+                </p>
+            </div>
         </div>
     </div>
 </div>

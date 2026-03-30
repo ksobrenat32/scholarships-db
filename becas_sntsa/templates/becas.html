@@ -1,11 +1,87 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
 
-<div class="row">
-    <div class="col-md-12">
-        <h1>Becas</h1>
-        <p>Programa para el registro de solicitudes de becas de la SNTSA</p>
+<!-- Personalized Welcome Section -->
+<section class="mb-16">
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div>
+            <h1 class="text-5xl font-extrabold tracking-tight text-on-surface mb-2">Mi Dashboard</h1>
+            <p class="text-on-surface-variant text-lg max-w-2xl">Bienvenido a tu panel de gestión académica.</p>
+        </div>
+        <div class="flex gap-4">
+            <a href="{% url 'create_solicitud_aprovechamiento' %}" class="bg-primary-gradient text-on-primary px-6 py-3 rounded-xl font-semibold shadow-lg hover:opacity-90 transition-all flex items-center gap-2">
+                <span class="material-symbols-outlined" data-icon="add_circle">add_circle</span>
+                Nueva Solicitud
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Bento Grid Dashboard -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-8">
+
+    <!-- Mis Solicitudes: Large Span -->
+    <div class="md:col-span-8 bg-surface-container-lowest rounded-xl p-8 shadow-[0_12px_40px_rgba(25,28,30,0.04)] border border-outline-variant/20">
+        <div class="flex justify-between items-center mb-8">
+            <h2 class="text-2xl font-bold tracking-tight text-on-surface">Gestión Rápida</h2>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-6">
+            <a href="{% url 'ver_solicitudes' %}" class="group block bg-surface-container-low p-6 rounded-2xl hover:bg-primary transition-colors border border-outline-variant/10 shadow-sm">
+                <div class="w-12 h-12 rounded-xl bg-surface-container mb-4 flex items-center justify-center group-hover:bg-white/20">
+                    <span class="material-symbols-outlined text-primary group-hover:text-white" data-icon="description">description</span>
+                </div>
+                <h3 class="font-headline font-bold text-lg text-on-surface group-hover:text-white">Mis Solicitudes</h3>
+                <p class="text-on-surface-variant text-sm mt-1 group-hover:text-white/80">Revisa el estado de tus trámites en curso.</p>
+            </a>
+
+            <a href="{% url 'ver_becarios' %}" class="group block bg-surface-container-low p-6 rounded-2xl hover:bg-primary transition-colors border border-outline-variant/10 shadow-sm">
+                <div class="w-12 h-12 rounded-xl bg-surface-container mb-4 flex items-center justify-center group-hover:bg-white/20">
+                    <span class="material-symbols-outlined text-primary group-hover:text-white" data-icon="group">group</span>
+                </div>
+                <h3 class="font-headline font-bold text-lg text-on-surface group-hover:text-white">Mis Becarios</h3>
+                <p class="text-on-surface-variant text-sm mt-1 group-hover:text-white/80">Administra la información de tus dependientes.</p>
+            </a>
+        </div>
+    </div>
+
+    <!-- Perfil: Right Sidebar top -->
+    <div class="md:col-span-4 bg-surface-container-high rounded-xl p-8 flex flex-col items-center text-center">
+        <div class="relative mb-6">
+            <div class="w-24 h-24 rounded-full bg-white flex items-center justify-center border-4 border-surface-container-lowest shadow-sm">
+                <span class="material-symbols-outlined text-5xl text-outline-variant">person</span>
+            </div>
+            <a href="{% url 'editar_usuario' %}" class="absolute bottom-0 right-0 bg-primary text-white p-1.5 rounded-full border-2 border-surface-container-high hover:scale-110 transition-transform">
+                <span class="material-symbols-outlined text-xs" data-icon="edit">edit</span>
+            </a>
+        </div>
+        <h2 class="text-xl font-bold text-on-surface mb-1">Mi Perfil</h2>
+        <p class="text-on-surface-variant text-sm mb-6">Actualiza tus datos laborales o personales.</p>
+    </div>
+
+    <!-- Ayuda Rápida: Full Width Bottom -->
+    <div class="md:col-span-12 bg-primary-container rounded-xl p-8 text-on-primary relative overflow-hidden mt-4">
+        <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div>
+                <h2 class="text-xl font-bold tracking-tight mb-2 flex items-center gap-2">
+                    <span class="material-symbols-outlined" data-icon="help">help</span>
+                    ¿Necesitas Ayuda?
+                </h2>
+                <p class="text-on-primary-container text-sm leading-relaxed max-w-2xl">
+                    Nuestro equipo está listo para guiarte en tu proceso de formación. Revisa los requisitos antes de enviar una solicitud o contacta a soporte técnico en caso de problemas con la plataforma.
+                </p>
+            </div>
+            <div class="flex gap-3">
+                <a href="{% url 'home' %}#requisitos" class="bg-surface-container-lowest/10 hover:bg-surface-container-lowest/20 transition-colors px-6 py-3 rounded-lg text-sm font-bold flex items-center gap-2 border border-white/10">
+                    <span class="material-symbols-outlined text-sm" data-icon="menu_book">menu_book</span>
+                    Ver Requisitos
+                </a>
+            </div>
+        </div>
+        <!-- Decorative element -->
+        <div class="absolute -bottom-20 -right-10 w-64 h-64 bg-white/5 rounded-full blur-3xl"></div>
     </div>
 </div>
 

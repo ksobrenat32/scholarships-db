@@ -1,28 +1,45 @@
 {% extends 'base.html' %}
+{% load form_tags %}
 
 {% block content %}
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">Editar Becario</div>
+<div class="max-w-4xl mx-auto py-12">
+    <!-- Header Section -->
+    <section class="mb-12 text-center max-w-2xl mx-auto">
+        <h1 class="font-headline text-4xl font-extrabold text-on-surface tracking-tight mb-4">Editar Becario</h1>
+        <p class="text-on-surface-variant text-lg">Modifica la información académica o personal de tu dependiente.</p>
+    </section>
 
-                <div class="card-body">
-                    {% if error %}
-                        <div class="alert alert-danger" role="alert">
-                            {{ error }}
-                        </div>
-                        <a href="{% url 'ver_becarios' %}" class="btn btn-secondary">Volver a la lista de becarios</a>
-                    {% else %}
-                        <form method="post" enctype="multipart/form-data">
-                            {% csrf_token %}
-                            {{ form.as_p }}
-                            <button type="submit" class="btn btn-primary">Guardar cambios</button>
-                        </form>
-                    {% endif %}
+    {% if error %}
+    <div class="bg-error-container text-on-error-container p-4 rounded-xl mb-6 font-medium text-sm border border-error/20 flex flex-col items-center gap-4 text-center">
+        <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-error">error</span>
+            <span>{{ error }}</span>
+        </div>
+        <a href="{% url 'ver_becarios' %}" class="bg-white/50 hover:bg-white text-error px-4 py-2 rounded-lg transition-colors font-semibold shadow-sm text-sm">Volver a la lista de becarios</a>
+    </div>
+    {% else %}
+    <form method="post" enctype="multipart/form-data" class="bg-surface-container-lowest rounded-[2rem] p-10 space-y-12 shadow-sm border border-outline-variant/10">
+        {% csrf_token %}
+
+        <div>
+            <h3 class="font-headline text-2xl font-bold text-on-surface mb-6">Datos del Becario</h3>
+            <div class="space-y-6">
+                <!-- Using as_p but styled with CSS -->
+                <div class="prose prose-slate max-w-none text-on-surface-variant form-styled-container">
+                    {{ form.as_p }}
                 </div>
             </div>
         </div>
-    </div>
+
+        <!-- Actions -->
+        <div class="flex justify-end gap-4 pt-8 border-t border-slate-100">
+            <a href="{% url 'ver_becarios' %}" class="px-8 py-3 text-slate-500 font-bold hover:bg-slate-100 rounded-xl transition-all">Cancelar</a>
+            <button type="submit" class="bg-primary-gradient px-8 py-3 text-white font-bold rounded-xl shadow-lg hover:shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center gap-2">
+                <span class="material-symbols-outlined text-sm">save</span>
+                Guardar Cambios
+            </button>
+        </div>
+    </form>
+    {% endif %}
 </div>
 {% endblock %}

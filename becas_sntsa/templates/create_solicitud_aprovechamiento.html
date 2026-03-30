@@ -3,57 +3,100 @@
 
 {% block content %}
 
-<div class="row justify-content-center">
-    <div class="col-md-10">
-        <div class="p-4">
-            <h1 class="text-center">Registrar Solicitud de Aprovechamiento</h1>
+<!-- Wizard Header -->
+<section class="mb-12">
+    <h1 class="font-headline text-4xl font-extrabold text-on-surface tracking-tight mb-4">Nueva Solicitud: Aprovechamiento</h1>
+    <p class="text-on-surface-variant text-lg max-w-2xl">Inicia tu proceso de beca institucional. Completa tu expediente digital.</p>
+</section>
 
-            {% if error %}
-            <div class="alert alert-danger" role="alert">
-                {{ error }}
-            </div>
-            {% endif %}
+{% if error %}
+<div class="bg-error-container text-on-error-container p-4 rounded-xl mb-6 font-medium text-sm border border-error/20 flex items-center gap-2">
+    <span class="material-symbols-outlined text-error">error</span>
+    {{ error }}
+</div>
+{% endif %}
 
-            <form method="POST" action="{% url 'create_solicitud_aprovechamiento' %}" enctype="multipart/form-data" class="mt-4" id="solicitudNormalForm">
-                {% csrf_token %}
+<!-- Wizard Content Area -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+    <!-- Main Form Section -->
+    <div class="lg:col-span-8 space-y-10">
+        <form method="POST" action="{% url 'create_solicitud_aprovechamiento' %}" enctype="multipart/form-data" id="solicitudNormalForm">
+            {% csrf_token %}
 
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="mb-1">
-                            <label for="becario" class="form-label">Becario</label>
-                            {{ form.becario|add_class:"form-control" }}
-                        </div>
-                        <div class="mb-1">
-                            <label for="ine" class="form-label">INE del trabajador</label>
-                            {{ form.ine|add_class:"form-control" }}
-                        </div>
-                        <div class="mb-1">
-                            <label for="recibo_nomina" class="form-label">Último recibo de Nómina</label>
-                            {{ form.recibo_nomina|add_class:"form-control" }}
-                        </div>
+            <div class="bg-surface-container-lowest p-8 rounded-2xl shadow-sm border border-outline-variant/20 mb-8">
+                <h2 class="font-headline text-2xl font-bold mb-6">Datos de la Solicitud</h2>
+
+                <div class="space-y-6">
+                    <div class="space-y-2">
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500">Becario</label>
+                        {{ form.becario|add_class:"form-input-styled" }}
                     </div>
-                    <div class="col-md-6">
-                        <div class="mb-1">
-                            <label for="boleta" class="form-label">Boleta</label>
-                            {{ form.boleta|add_class:"form-control" }}
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500">Grado</label>
+                            {{ form.grado|add_class:"form-input-styled" }}
                         </div>
-                        <div class="mb-1">
-                            <label for="grado" class="form-label">Grado</label>
-                            {{ form.grado|add_class:"form-control" }}
-                        </div>
-                        <div class="mb-1">
-                            <label for="promedio" class="form-label">Promedio</label>
-                            {{ form.promedio|add_class:"form-control" }}
-                        </div>
-                        <div class="mb-1 text-center">
-                            <br>
-                            <button type="submit" class="btn btn-primary">Enviar</button>
+                        <div class="space-y-2">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500">Promedio</label>
+                            {{ form.promedio|add_class:"form-input-styled" }}
                         </div>
                     </div>
                 </div>
-            </form>
-        </div>
+            </div>
+
+            <div class="bg-surface-container-lowest p-8 rounded-2xl shadow-sm border border-outline-variant/20">
+                <h2 class="font-headline text-2xl font-bold mb-6">Documentación</h2>
+                <div class="space-y-6">
+                    <div class="space-y-2">
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500">INE del trabajador</label>
+                        {{ form.ine|add_class:"form-input-styled" }}
+                    </div>
+                    <div class="space-y-2">
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500">Último recibo de Nómina</label>
+                        {{ form.recibo_nomina|add_class:"form-input-styled" }}
+                    </div>
+                    <div class="space-y-2">
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500">Boleta de Calificaciones</label>
+                        {{ form.boleta|add_class:"form-input-styled" }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-end pt-8">
+                <button type="submit" class="flex items-center gap-2 px-8 py-3 bg-gradient-to-br from-primary to-primary-container text-white rounded-xl font-bold shadow-lg shadow-primary/25 hover:scale-[1.02] active:scale-95 transition-all">
+                    Enviar Solicitud
+                    <span class="material-symbols-outlined" data-icon="send">send</span>
+                </button>
+            </div>
+        </form>
     </div>
+
+    <!-- Contextual Help Sidebar -->
+    <aside class="lg:col-span-4 sticky top-32 space-y-6">
+        <div class="bg-tertiary-container/10 p-6 rounded-2xl border border-tertiary-fixed-dim/20">
+            <div class="flex items-center gap-3 mb-4 text-on-tertiary-fixed-variant">
+                <span class="material-symbols-outlined" data-icon="info" style="font-variation-settings: 'FILL' 1;">info</span>
+                <h3 class="font-headline font-bold">Ayuda Contextual</h3>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <h4 class="text-sm font-bold text-on-tertiary-fixed-variant mb-1 uppercase tracking-tight">Sobre la Beca Seleccionada</h4>
+                    <p class="text-sm text-on-surface-variant leading-relaxed">Has seleccionado la <strong>Beca de Aprovechamiento</strong>. Esta modalidad requiere un promedio mínimo de 8.5.</p>
+                </div>
+                <div class="h-px bg-on-tertiary-fixed-variant/10"></div>
+                <div>
+                    <h4 class="text-sm font-bold text-on-tertiary-fixed-variant mb-1 uppercase tracking-tight">Requisitos Técnicos</h4>
+                    <ul class="text-sm text-on-surface-variant space-y-2">
+                        <li class="flex items-start gap-2">
+                            <span class="text-tertiary mt-1">•</span>
+                            Los archivos PDF deben ser legibles y no estar protegidos por contraseña.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </aside>
 </div>
 
 {% endblock %}

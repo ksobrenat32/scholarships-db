@@ -3,84 +3,105 @@
 
 {% block content %}
 
-<div class="row justify-content-center">
-    <div class="col-md-10">
-        <div class="p-4">
-            <h1 class="text-center">Registrar Trabajador</h1>
+<!-- Header Section -->
+<section class="mb-12 text-center max-w-2xl mx-auto">
+    <h1 class="font-headline text-4xl font-extrabold text-on-surface tracking-tight mb-4">Completar Perfil</h1>
+    <p class="text-on-surface-variant text-lg">Registra tus datos personales y laborales para habilitar el uso del portal.</p>
+</section>
 
-            {% if error %}
-            <div class="alert alert-danger" role="alert">
-                {{ error }}
-            </div>
-            {% endif %}
+{% if error %}
+<div class="bg-error-container text-on-error-container p-4 rounded-xl mb-6 font-medium text-sm border border-error/20 flex items-center gap-2 max-w-4xl mx-auto">
+    <span class="material-symbols-outlined text-error">error</span>
+    {{ error }}
+</div>
+{% endif %}
 
-            <form method="POST" action="{% url 'create_trabajador' %}" enctype="multipart/form-data" class="mt-4" id="trabajadorForm">
-                {% csrf_token %}
+<div class="max-w-4xl mx-auto">
+    <form method="POST" action="{% url 'create_trabajador' %}" enctype="multipart/form-data" id="trabajadorForm" class="bg-surface-container-lowest rounded-[2rem] p-10 space-y-12 shadow-sm border border-outline-variant/10">
+        {% csrf_token %}
 
-                <!-- General user information -->
-                <div class="row">
-                    <div class="col-md-6">
-                        <!-- Custom form fields for names and last names -->
-                        <div class="mb-1">
-                            <label for="nombre" class="form-label">Nombre</label>
-                            {{ form.nombre|add_class:"form-control" }}
-                        </div>
-                        <div class="mb-1">
-                            <label for="apellido_paterno" class="form-label">Apellido Paterno</label>
-                            {{ form.apellido_paterno|add_class:"form-control" }}
-                        </div>
-                        <div class="mb-1">
-                            <label for="apellido_materno" class="form-label">Apellido Materno</label>
-                            {{ form.apellido_materno|add_class:"form-control" }}
-                        </div>
-                        <div class="mb-1">
-                            <label for="curp_archivo" class="form-label">Archivo CURP</label>
-                            {{ form.curp_archivo|add_class:"form-control" }}
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="mb-1">
-                            <label for="telefono" class="form-label">Teléfono</label>
-                            {{ form.telefono|add_class:"form-control" }}
-                        </div>
-                        <div class="mb-1">
-                            <label for="correo" class="form-label">Correo</label>
-                            {{ form.correo|add_class:"form-control" }}
-                        </div>
-                        <div class="row">
-                            <div class="col-md-4">
-                                <div class="mb-1">
-                                    <label for="seccion" class="form-label">Sección</label>
-                                    {{ form.seccion|add_class:"form-control" }}
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="mb-1">
-                                    <label for="puesto" class="form-label">Puesto</label>
-                                    {{ form.puesto|add_class:"form-control" }}
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="mb-1">
-                                    <label for="jurisdiccion" class="form-label">Jurisdicción</label>
-                                    {{ form.jurisdiccion|add_class:"form-control" }}
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="mb-1">
-                            <label for="lugar_adscripcion" class="form-label">Lugar de Adscripción</label>
-                            {{ form.lugar_adscripcion|add_class:"form-control" }}
-                        </div>
-
-                        </div>
-                    </div>
+        <!-- Datos Personales -->
+        <div>
+            <div class="flex justify-between items-end mb-8">
+                <div>
+                    <h3 class="font-headline text-2xl font-bold text-on-surface">Datos Personales</h3>
+                    <p class="text-on-surface-variant text-sm mt-1">Información de identidad básica.</p>
                 </div>
+            </div>
 
-                <button type="submit" class="btn btn-primary btn-block">Registrar trabajador</button>
-            </form>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
+                <div class="space-y-2">
+                    <label for="nombre" class="block text-xs font-bold uppercase tracking-wider text-slate-500">Nombre</label>
+                    {{ form.nombre|add_class:"form-input-styled" }}
+                </div>
+                <div class="space-y-2">
+                    <label for="apellido_paterno" class="block text-xs font-bold uppercase tracking-wider text-slate-500">Apellido Paterno</label>
+                    {{ form.apellido_paterno|add_class:"form-input-styled" }}
+                </div>
+                <div class="space-y-2">
+                    <label for="apellido_materno" class="block text-xs font-bold uppercase tracking-wider text-slate-500">Apellido Materno</label>
+                    {{ form.apellido_materno|add_class:"form-input-styled" }}
+                </div>
+                <div class="space-y-2">
+                    <label for="curp_archivo" class="block text-xs font-bold uppercase tracking-wider text-slate-500">Archivo CURP (PDF)</label>
+                    {{ form.curp_archivo|add_class:"form-input-styled" }}
+                </div>
+            </div>
         </div>
-    </div>
+
+        <!-- Datos de Contacto -->
+        <div>
+            <h3 class="font-headline text-2xl font-bold text-on-surface mb-6">Información de Contacto</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
+                <div class="space-y-2">
+                    <label for="telefono" class="block text-xs font-bold uppercase tracking-wider text-slate-500">Teléfono</label>
+                    {{ form.telefono|add_class:"form-input-styled" }}
+                </div>
+                <div class="space-y-2">
+                    <label for="correo" class="block text-xs font-bold uppercase tracking-wider text-slate-500">Correo</label>
+                    {{ form.correo|add_class:"form-input-styled" }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Información Laboral -->
+        <div class="bg-surface-container-low p-8 rounded-3xl border border-outline-variant/10">
+            <div class="flex justify-between items-end mb-8">
+                <div>
+                    <h3 class="font-headline text-2xl font-bold text-on-surface">Información Laboral</h3>
+                    <p class="text-on-surface-variant text-sm mt-1">Detalles de tu posición actual en la institución.</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="space-y-2">
+                    <label for="seccion" class="block text-xs font-bold uppercase tracking-wider text-slate-500">Sección</label>
+                    {{ form.seccion|add_class:"form-input-styled" }}
+                </div>
+                <div class="space-y-2">
+                    <label for="puesto" class="block text-xs font-bold uppercase tracking-wider text-slate-500">Puesto</label>
+                    {{ form.puesto|add_class:"form-input-styled" }}
+                </div>
+                <div class="space-y-2">
+                    <label for="jurisdiccion" class="block text-xs font-bold uppercase tracking-wider text-slate-500">Jurisdicción</label>
+                    {{ form.jurisdiccion|add_class:"form-input-styled" }}
+                </div>
+            </div>
+
+            <div class="mt-6 space-y-2">
+                <label for="lugar_adscripcion" class="block text-xs font-bold uppercase tracking-wider text-slate-500">Lugar de Adscripción</label>
+                {{ form.lugar_adscripcion|add_class:"form-input-styled" }}
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex justify-end gap-4 pt-8 border-t border-slate-100">
+            <button type="submit" class="bg-primary-gradient px-8 py-3 text-white font-bold rounded-xl shadow-lg hover:shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center gap-2">
+                <span class="material-symbols-outlined text-sm">how_to_reg</span>
+                Registrar Trabajador
+            </button>
+        </div>
+    </form>
 </div>
 
 {% endblock %}

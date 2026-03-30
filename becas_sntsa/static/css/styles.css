@@ -1,0 +1,45 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap');
+
+body {
+    font-family: 'Inter', sans-serif;
+}
+
+h1, h2, h3, .brand-font {
+    font-family: 'Manrope', sans-serif;
+}
+
+.material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    vertical-align: middle;
+}
+
+.bg-primary-gradient {
+    background: linear-gradient(135deg, #00288e 0%, #1e40af 100%);
+}
+
+.glass-card {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+.form-input-styled {
+    width: 100%;
+    background-color: var(--tw-colors-surface-container-high, #e6e8ea);
+    border: none;
+    border-radius: 0.75rem;
+    padding: 0.75rem 1rem;
+    color: var(--tw-colors-on-surface, #191c1e);
+    font-weight: 500;
+    transition-property: all;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 300ms;
+}
+
+.form-input-styled:focus {
+    --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+    --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+    box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
+    --tw-ring-color: rgba(0, 40, 142, 0.5); /* primary */
+}
+.form-styled-container input { width: 100%; background-color: var(--tw-colors-surface-container-high, #e6e8ea); border: none; border-radius: 0.75rem; padding: 0.75rem 1rem; margin-top: 0.5rem; margin-bottom: 1rem; font-weight: 500; } .form-styled-container label { display: block; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; }
