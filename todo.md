@@ -8,7 +8,7 @@
 - [x] Acotar secciones a solo Sección 37.
 - [x] Acotar sección de adscripción.
 - [x] Chequeo del formato del curp en los formularios.
-- [ ] Especificar SNTSA 37 en lugar de solo SNTSA.
+- [x] Especificar SNTSA 37 en lugar de solo SNTSA.
 
 ## Futuro
 
