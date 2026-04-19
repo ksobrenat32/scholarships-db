@@ -420,7 +420,7 @@ def download_file(request, file_path):
             clean_file_path = file_path.rstrip('/')
             if trabajador:
                 # Check if it's the trabajador's own file
-                if trabajador.curp_archivo and clean_file_path == trabajador.curp_archivo.name:
+                if trabajador.talon_pago_archivo and clean_file_path == trabajador.talon_pago_archivo.name:
                     allowed = True
                 
                 # Check if it's a file from their becarios

@@ -120,7 +120,7 @@ class Trabajador(models.Model):
         nombre (str): The worker's first name.
         apellido_paterno (str): The worker's paternal last name.
         apellido_materno (str, optional): The worker's maternal last name.
-        curp_archivo (FileField): The worker's CURP document.
+        talon_pago_archivo (FileField): The worker's payment stub document.
         telefono (str): The worker's phone number.
         correo (EmailField): The worker's email address.
         seccion (Seccion): The worker's section.
@@ -134,7 +134,7 @@ class Trabajador(models.Model):
     nombre = models.CharField(max_length=128)
     apellido_paterno = models.CharField(max_length=128)
     apellido_materno = models.CharField(max_length=128, null=True, blank=True)
-    curp_archivo = models.FileField(upload_to='curp/')
+    talon_pago_archivo = models.FileField(upload_to='talon_pago/')
 
     telefono = models.CharField(max_length=10)
     correo = models.EmailField()

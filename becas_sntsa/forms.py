@@ -26,7 +26,7 @@ class TrabajadorCreateForm(ModelForm):
         Meta options for the TrabajadorCreateForm.
         """
         model = Trabajador
-        fields = ['nombre', 'apellido_paterno', 'apellido_materno', 'curp_archivo',
+        fields = ['nombre', 'apellido_paterno', 'apellido_materno', 'talon_pago_archivo',
                   'telefono', 'correo', 'seccion', 'puesto', 'jurisdiccion', 'lugar_adscripcion']
         widgets = {
             'correo': forms.EmailInput(),
@@ -68,7 +68,7 @@ class TrabajadorEditForm(ModelForm):
         Meta options for the TrabajadorEditForm.
         """
         model = Trabajador
-        fields = ['curp_archivo', 'telefono', 'correo']
+        fields = ['talon_pago_archivo', 'telefono', 'correo']
         widgets = {
             'correo': forms.EmailInput(),
         }
