@@ -321,6 +321,9 @@ class DownloadFileViewTest(TestCase):
         # Non-staff user
         self.non_staff_user = User.objects.create_user(username='nonstaff', password='testpassword')
 
+        # Non-staff user 2
+        self.non_staff_user2 = User.objects.create_user(username='nonstaff2', password='testpassword')
+
         # Staff user
         self.staff_user = User.objects.create_user(username='staff', password='testpassword', is_staff=True)
 
@@ -340,8 +343,13 @@ class DownloadFileViewTest(TestCase):
             aprobado=True
         )
 
-    def test_download_file_non_staff(self):
+    def test_download_file_non_staff_allowed(self):
         self.client.login(username='nonstaff', password='testpassword')
+        response = self.client.get(reverse('download_file', args=[self.trabajador.curp_archivo.name]))
+        self.assertEqual(response.status_code, 200)
+
+    def test_download_file_non_staff_forbidden(self):
+        self.client.login(username='nonstaff2', password='testpassword')
         response = self.client.get(reverse('download_file', args=[self.trabajador.curp_archivo.name]))
         self.assertEqual(response.status_code, 403)
 
@@ -375,3 +383,24 @@ class DjangoVersionTest(TestCase):
         Tests that the Django version is at least 5.2.6.
         """
         self.assertTrue(parse(django.get_version()) >= parse('5.2.6'))
+
+class PasswordChangeTest(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='test_pass_user', password='oldpassword')
+
+    def test_change_password_success(self):
+        """
+        Test that a logged-in user can change their password and is redirected to signin.
+        """
+        self.client.login(username='test_pass_user', password='oldpassword')
+        response = self.client.post(reverse('change_password'), {
+            'old_password': 'oldpassword',
+            'new_password1': 'Newpassword_123',
+            'new_password2': 'Newpassword_123'
+        })
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('signin'))
+        
+        # Verify the new password works
+        auth_success = self.client.login(username='test_pass_user', password='Newpassword_123')
+        self.assertTrue(auth_success)
