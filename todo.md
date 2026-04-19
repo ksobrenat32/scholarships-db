@@ -5,7 +5,7 @@
 - [ ] Verificación de cuenta de correo electrónico para trabajadores.
 - [x] Página de mi cuenta para trabajadores, con opciones de editar correo electrónico, teléfono y contraseña.
 - [ ] Cambiar el archivo curp del trabajador a talon de pago.
-- [ ] Acotar secciones a solo Sección 37.
+- [x] Acotar secciones a solo Sección 37.
 - [ ] Acotar sección de adscripción.
 - [ ] Chequeo del formato del curp en los formularios.
 - [ ] Especificar SNTSA 37 en lugar de solo SNTSA.
