@@ -4,9 +4,9 @@ Views for the becas_sntsa app.
 This file contains the view functions that handle requests and responses for the scholarship application system.
 """
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordChangeForm
 from django.contrib.auth.models import User
-from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth import login, logout, authenticate, update_session_auth_hash
 from django.db import IntegrityError
 from django.contrib.auth.decorators import login_required
 from becas_sntsa.forms import TrabajadorCreateForm, BecarioCreateForm, SolicitudAprovechamientoCreateForm, SolicitudExcelenciaCreateForm, SolicitudEspecialCreateForm, TrabajadorEditForm, BecarioEditForm
@@ -413,7 +413,44 @@ def download_file(request, file_path):
                                                forbidden response.
     """
     if not request.user.is_staff:
-        return HttpResponseForbidden("You do not have permission to access this file.")
+        # Check if the file belongs to the current user (trabajador, becario, or solicitud)
+        allowed = False
+        try:
+            trabajador = getattr(request.user, 'trabajador', None)
+            clean_file_path = file_path.rstrip('/')
+            if trabajador:
+                # Check if it's the trabajador's own file
+                if trabajador.curp_archivo and clean_file_path == trabajador.curp_archivo.name:
+                    allowed = True
+                
+                # Check if it's a file from their becarios
+                elif any(clean_file_path in [b.curp_archivo.name if b.curp_archivo else '', b.acta_nacimiento.name if b.acta_nacimiento else ''] for b in trabajador.usuario.becario_set.all()):
+                    allowed = True
+                
+                # Check if it's a file from their solicitudes
+                else:
+                    for becario in trabajador.usuario.becario_set.all():
+                        for solicitud in becario.solicitud_set.all():
+                            if solicitud.recibo_nomina and clean_file_path == solicitud.recibo_nomina.name:
+                                allowed = True
+                            if solicitud.ine and clean_file_path == solicitud.ine.name:
+                                allowed = True
+                            
+                            # Check subclasses explicitly
+                            if hasattr(solicitud, 'solicitudaprovechamiento') and solicitud.solicitudaprovechamiento.boleta and clean_file_path == solicitud.solicitudaprovechamiento.boleta.name:
+                                allowed = True
+                            elif hasattr(solicitud, 'solicitudexcelencia') and solicitud.solicitudexcelencia.boleta and clean_file_path == solicitud.solicitudexcelencia.boleta.name:
+                                allowed = True
+                            elif hasattr(solicitud, 'solicitudespecial'):
+                                especial = solicitud.solicitudespecial
+                                if (especial.certificado_medico and clean_file_path == especial.certificado_medico.name) or \
+                                   (especial.certificado_escolar and clean_file_path == especial.certificado_escolar.name):
+                                    allowed = True
+        except Exception:
+            pass
+            
+        if not allowed:
+            return HttpResponseForbidden("You do not have permission to access this file.")
 
     normalized_path = os.path.normpath(file_path)
     file_full_path = os.path.join(settings.MEDIA_ROOT, normalized_path)
@@ -500,6 +537,23 @@ def editar_usuario(request):
             return redirect('becas')
         else:
             return render(request, 'editar_usuario.html', {'form': form})
+
+
+@login_required
+def change_password(request):
+    """
+    Handles the editing of a user's password.
+    """
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('signin')
+        else:
+            return render(request, 'change_password.html', {'form': form})
+    else:
+        form = PasswordChangeForm(request.user)
+        return render(request, 'change_password.html', {'form': form})
 
 
 @login_required
