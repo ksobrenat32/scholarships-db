@@ -115,7 +115,7 @@ class AccessControlTest(TestCase):
             usuario=self.unapproved_user,
             nombre='Test',
             apellido_paterno='User',
-            curp_archivo=SimpleUploadedFile("file.txt", b"file_content"),
+            talon_pago_archivo=SimpleUploadedFile("file.txt", b"file_content"),
             telefono='1234567890',
             correo='test@test.com',
             seccion=self.seccion,
@@ -131,7 +131,7 @@ class AccessControlTest(TestCase):
             usuario=self.approved_user,
             nombre='Approved',
             apellido_paterno='User',
-            curp_archivo=SimpleUploadedFile("file.txt", b"file_content"),
+            talon_pago_archivo=SimpleUploadedFile("file.txt", b"file_content"),
             telefono='1234567890',
             correo='approved@test.com',
             seccion=self.seccion,
@@ -201,7 +201,7 @@ class CreationViewsTest(TestCase):
             usuario=self.user,
             nombre='Test',
             apellido_paterno='User',
-            curp_archivo=SimpleUploadedFile("file.txt", b"file_content"),
+            talon_pago_archivo=SimpleUploadedFile("file.txt", b"file_content"),
             telefono='1234567890',
             correo='test@test.com',
             seccion=self.seccion,
@@ -240,7 +240,7 @@ class CreationViewsTest(TestCase):
             'puesto': self.puesto.id,
             'jurisdiccion': self.jurisdiccion.id,
             'lugar_adscripcion': self.lugar.id,
-            'curp_archivo': SimpleUploadedFile("file.txt", b"file_content")
+            'talon_pago_archivo': SimpleUploadedFile("file.txt", b"file_content")
         }
         response = self.client.post(reverse('create_trabajador'), data, follow=True)
         self.assertEqual(response.status_code, 200)
@@ -333,7 +333,7 @@ class DownloadFileViewTest(TestCase):
             usuario=self.non_staff_user,
             nombre='Test',
             apellido_paterno='User',
-            curp_archivo=self.file,
+            talon_pago_archivo=self.file,
             telefono='1234567890',
             correo='test@test.com',
             seccion=self.seccion,
@@ -345,17 +345,17 @@ class DownloadFileViewTest(TestCase):
 
     def test_download_file_non_staff_allowed(self):
         self.client.login(username='nonstaff', password='testpassword')
-        response = self.client.get(reverse('download_file', args=[self.trabajador.curp_archivo.name]))
+        response = self.client.get(reverse('download_file', args=[self.trabajador.talon_pago_archivo.name]))
         self.assertEqual(response.status_code, 200)
 
     def test_download_file_non_staff_forbidden(self):
         self.client.login(username='nonstaff2', password='testpassword')
-        response = self.client.get(reverse('download_file', args=[self.trabajador.curp_archivo.name]))
+        response = self.client.get(reverse('download_file', args=[self.trabajador.talon_pago_archivo.name]))
         self.assertEqual(response.status_code, 403)
 
     def test_download_file_staff(self):
         self.client.login(username='staff', password='testpassword')
-        response = self.client.get(reverse('download_file', args=[self.trabajador.curp_archivo.name]))
+        response = self.client.get(reverse('download_file', args=[self.trabajador.talon_pago_archivo.name]))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.getvalue(), b"file content")
 
@@ -373,7 +373,7 @@ class DownloadFileViewTest(TestCase):
 
     def tearDown(self):
         # Clean up the created file
-        file_path = os.path.join(settings.MEDIA_ROOT, self.trabajador.curp_archivo.name)
+        file_path = os.path.join(settings.MEDIA_ROOT, self.trabajador.talon_pago_archivo.name)
         if os.path.exists(file_path):
             os.remove(file_path)
 
