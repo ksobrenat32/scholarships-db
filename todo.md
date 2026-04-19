@@ -7,7 +7,7 @@
 - [ ] Cambiar el archivo curp del trabajador a talon de pago.
 - [x] Acotar secciones a solo Sección 37.
 - [ ] Acotar sección de adscripción.
-- [ ] Chequeo del formato del curp en los formularios.
+- [x] Chequeo del formato del curp en los formularios.
 - [ ] Especificar SNTSA 37 en lugar de solo SNTSA.
 
 ## Futuro

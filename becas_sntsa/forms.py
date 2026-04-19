@@ -3,10 +3,19 @@ Forms for the becas_sntsa app.
 
 This file defines the forms used to create and edit workers, scholars, and scholarship applications.
 """
+import re
 from django import forms
 from django.forms import ModelForm
+from django.core.exceptions import ValidationError
 from becas_sntsa.models import Trabajador, Becario, SolicitudAprovechamiento, SolicitudExcelencia, SolicitudEspecial
 
+def validar_curp(curp):
+    """
+    Valida el formato de la CURP.
+    """
+    regex = r"^[A-Z]{1}[AEIOU]{1}[A-Z]{2}[0-9]{2}(0[1-9]|1[0-2])(0[1-9]|1[0-9]|2[0-9]|3[0-1])[HM]{1}(AS|BC|BS|CC|CS|CH|CL|CM|DF|DG|GT|GR|HG|JC|MC|MN|MS|NT|NL|OC|PL|QT|QR|SP|SL|SR|TC|TS|TL|VZ|YN|ZS|NE)[A-Z]{3}[A-Z0-9]{1}[0-9]{1}$"
+    if not re.match(regex, curp):
+        raise ValidationError('El formato de la CURP no es válido.')
 
 class TrabajadorCreateForm(ModelForm):
     """
@@ -35,6 +44,19 @@ class BecarioCreateForm(ModelForm):
         model = Becario
         fields = ['nombre', 'apellido_paterno', 'apellido_materno',
                   'curp', 'curp_archivo', 'acta_nacimiento']
+        widgets = {
+            'curp': forms.TextInput(attrs={
+                'pattern': r'^[A-Z]{1}[AEIOU]{1}[A-Z]{2}[0-9]{2}(0[1-9]|1[0-2])(0[1-9]|1[0-9]|2[0-9]|3[0-1])[HM]{1}(AS|BC|BS|CC|CS|CH|CL|CM|DF|DG|GT|GR|HG|JC|MC|MN|MS|NT|NL|OC|PL|QT|QR|SP|SL|SR|TC|TS|TL|VZ|YN|ZS|NE)[A-Z]{3}[A-Z0-9]{1}[0-9]{1}$',
+                'title': 'Ingrese un formato de CURP válido de 18 caracteres'
+            })
+        }
+
+    def clean_curp(self):
+        curp = self.cleaned_data.get('curp')
+        if curp:
+            curp = curp.upper()
+            validar_curp(curp)
+        return curp
 
 
 class TrabajadorEditForm(ModelForm):
@@ -63,6 +85,19 @@ class BecarioEditForm(ModelForm):
         model = Becario
         fields = ['nombre', 'apellido_paterno', 'apellido_materno',
                   'curp', 'curp_archivo', 'acta_nacimiento']
+        widgets = {
+            'curp': forms.TextInput(attrs={
+                'pattern': r'^[A-Z]{1}[AEIOU]{1}[A-Z]{2}[0-9]{2}(0[1-9]|1[0-2])(0[1-9]|1[0-9]|2[0-9]|3[0-1])[HM]{1}(AS|BC|BS|CC|CS|CH|CL|CM|DF|DG|GT|GR|HG|JC|MC|MN|MS|NT|NL|OC|PL|QT|QR|SP|SL|SR|TC|TS|TL|VZ|YN|ZS|NE)[A-Z]{3}[A-Z0-9]{1}[0-9]{1}$',
+                'title': 'Ingrese un formato de CURP válido de 18 caracteres'
+            })
+        }
+
+    def clean_curp(self):
+        curp = self.cleaned_data.get('curp')
+        if curp:
+            curp = curp.upper()
+            validar_curp(curp)
+        return curp
 
 
 class SolicitudAprovechamientoCreateForm(forms.ModelForm):
