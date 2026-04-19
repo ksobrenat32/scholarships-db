@@ -3,7 +3,7 @@
 ## Necesario
 
 - [ ] Verificación de cuenta de correo electrónico para trabajadores.
-- [ ] Página de mi cuenta para trabajadores, con opciones de editar correo electrónico, teléfono y contraseña.
+- [x] Página de mi cuenta para trabajadores, con opciones de editar correo electrónico, teléfono y contraseña.
 - [ ] Cambiar el archivo curp del trabajador a talon de pago.
 - [ ] Acotar secciones a solo Sección 37.
 - [ ] Acotar sección de adscripción.
