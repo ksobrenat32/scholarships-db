@@ -5,6 +5,7 @@ This file defines the database models for the scholarship application system.
 It includes models for workers, scholars, applications, and related data.
 """
 import logging
+import smtplib
 from urllib.parse import urlparse
 from django.db import models, transaction
 from django.db.models import Q
@@ -183,7 +184,7 @@ class Trabajador(models.Model):
                 try:
                     email = EmailMessage(subject, message, to=[self.correo])
                     email.send()
-                except Exception:
+                except (smtplib.SMTPException, OSError):
                     logger.exception(
                         "No se pudo enviar correo de aprobación para trabajador_id=%s",
                         self.pk
@@ -323,7 +324,7 @@ class Solicitud(models.Model):
                 try:
                     email = EmailMessage(subject, message, to=[trabajador_obj.correo])
                     email.send()
-                except Exception:
+                except (smtplib.SMTPException, OSError):
                     logger.exception(
                         "No se pudo enviar correo de estado para solicitud_id=%s",
                         self.pk

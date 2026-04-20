@@ -1,4 +1,5 @@
 import os
+import smtplib
 import django
 from unittest.mock import patch
 from packaging.version import parse
@@ -431,7 +432,7 @@ class TrabajadorNotificationEmailTest(TestCase):
             aprobado=False
         )
 
-    @patch('becas_sntsa.models.EmailMessage.send', side_effect=Exception('smtp failure'))
+    @patch('becas_sntsa.models.EmailMessage.send', side_effect=smtplib.SMTPException('smtp failure'))
     def test_aprobado_transition_does_not_fail_when_email_send_errors(self, mock_send):
         self.trabajador.aprobado = True
         with self.captureOnCommitCallbacks(execute=True):

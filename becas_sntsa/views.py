@@ -22,6 +22,7 @@ from django.conf import settings
 import logging
 import os
 import re
+import smtplib
 
 logger = logging.getLogger(__name__)
 
@@ -240,7 +241,7 @@ def create_trabajador(request):
                 )
                 try:
                     email.send()
-                except Exception:
+                except (smtplib.SMTPException, OSError):
                     logger.exception(
                         "No se pudo enviar correo de verificación para usuario_id=%s",
                         user.pk
@@ -605,7 +606,7 @@ def editar_usuario(request):
                 )
                 try:
                     email.send()
-                except Exception:
+                except (smtplib.SMTPException, OSError):
                     logger.exception(
                         "No se pudo enviar correo de confirmación de email para usuario_id=%s",
                         user.pk
@@ -719,7 +720,7 @@ def confirm_email_change(request, uidb64, token):
             trabajador.pending_email = None
             trabajador.save()
             return render(request, 'email_cambiado_exito.html')
-        except Exception:
+        except Trabajador.DoesNotExist:
             return HttpResponse('Error al procesar el cambio de correo.')
     else:
         return HttpResponse('El enlace de confirmación es inválido o ha expirado.')
