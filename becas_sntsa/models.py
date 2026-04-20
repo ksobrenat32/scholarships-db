@@ -4,7 +4,8 @@ Models for the becas_sntsa app.
 This file defines the database models for the scholarship application system.
 It includes models for workers, scholars, applications, and related data.
 """
-from django.db import models
+import logging
+from django.db import models, transaction
 from django.db.models import Q
 from django.contrib.auth.models import User
 from django.utils import timezone
@@ -13,6 +14,8 @@ from django.template.loader import render_to_string
 from django.conf import settings
 
 # Create your models here.
+
+logger = logging.getLogger(__name__)
 
 
 class Seccion(models.Model):
@@ -169,8 +172,17 @@ class Trabajador(models.Model):
                 'trabajador': self,
                 'domain': domain,
             })
-            email = EmailMessage(subject, message, to=[self.correo])
-            email.send()
+            def send_approval_email():
+                try:
+                    email = EmailMessage(subject, message, to=[self.correo])
+                    email.send()
+                except Exception:
+                    logger.exception(
+                        "No se pudo enviar correo de aprobación para trabajador_id=%s",
+                        self.pk
+                    )
+
+            transaction.on_commit(send_approval_email)
 
     def __str__(self):
         """

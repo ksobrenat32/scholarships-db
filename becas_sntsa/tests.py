@@ -1,5 +1,6 @@
 import os
 import django
+from unittest.mock import patch
 from packaging.version import parse
 from django.conf import settings
 from django.test import TestCase
@@ -404,3 +405,37 @@ class PasswordChangeTest(TestCase):
         # Verify the new password works
         auth_success = self.client.login(username='test_pass_user', password='Newpassword_123')
         self.assertTrue(auth_success)
+
+
+class TrabajadorNotificationEmailTest(TestCase):
+    def setUp(self):
+        self.seccion = Seccion.objects.create(numero=1)
+        self.puesto = Puesto.objects.create(clave='P1')
+        self.jurisdiccion = Jurisdiccion.objects.create(clave='J1')
+        self.lugar = LugarAdscripcion.objects.create(nombre='Lugar 1')
+        self.user = User.objects.create_user(
+            username='mail_notify_user',
+            password='testpassword'
+        )
+        self.trabajador = Trabajador.objects.create(
+            usuario=self.user,
+            nombre='Test',
+            apellido_paterno='Worker',
+            talon_pago_archivo=SimpleUploadedFile("file.txt", b"file_content"),
+            telefono='1234567890',
+            correo='notify@test.com',
+            seccion=self.seccion,
+            puesto=self.puesto,
+            jurisdiccion=self.jurisdiccion,
+            lugar_adscripcion=self.lugar,
+            aprobado=False
+        )
+
+    @patch('becas_sntsa.models.EmailMessage.send', side_effect=Exception('smtp failure'))
+    def test_aprobado_transition_does_not_fail_when_email_send_errors(self, mock_send):
+        self.trabajador.aprobado = True
+        with self.captureOnCommitCallbacks(execute=True):
+            self.trabajador.save()
+        self.trabajador.refresh_from_db()
+        self.assertTrue(self.trabajador.aprobado)
+        self.assertEqual(mock_send.call_count, 1)
