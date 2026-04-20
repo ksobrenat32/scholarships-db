@@ -1,6 +1,14 @@
 #!/bin/bash
 set -e
 
+# Source .env file if it exists
+if [ -f .env ]; then
+    echo "Loading environment variables from .env..."
+    set -a
+    source .env
+    set +a
+fi
+
 # This script sets a development environment in demo mode (using SQLite).
 
 # Clean all the media files

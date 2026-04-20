@@ -26,5 +26,6 @@ urlpatterns = [
     path('becas/editar_usuario/', views.editar_usuario, name='editar_usuario'),
     path('becas/change_password/', views.change_password, name='change_password'),
     path('becas/editar_becario/<int:becario_id>/', views.editar_becario, name='editar_becario'),
+    path('activate/<uidb64>/<token>/', views.activate, name='activate'),
     path('media/<path:file_path>', views.download_file, name='download_file'),
 ]

@@ -11,7 +11,13 @@ from django.db import IntegrityError
 from django.contrib.auth.decorators import login_required
 from becas_sntsa.forms import TrabajadorCreateForm, BecarioCreateForm, SolicitudAprovechamientoCreateForm, SolicitudExcelenciaCreateForm, SolicitudEspecialCreateForm, TrabajadorEditForm, BecarioEditForm
 from becas_sntsa.models import Trabajador, Becario, Solicitud, SolicitudAprovechamiento, SolicitudExcelencia, SolicitudEspecial
-from django.http import HttpResponseForbidden, FileResponse
+from django.http import HttpResponseForbidden, FileResponse, HttpResponse
+from django.contrib.sites.shortcuts import get_current_site
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
+from django.contrib.auth.tokens import default_token_generator
+from django.template.loader import render_to_string
+from django.core.mail import EmailMessage
 from django.conf import settings
 import os
 import re
@@ -206,10 +212,33 @@ def create_trabajador(request):
             form = TrabajadorCreateForm(request.POST, request.FILES)
             if form.is_valid():
                 trabajador = form.save(commit=False)
-                trabajador.usuario = User.objects.get(
+                user = User.objects.get(
                     username=request.user.username)
+                trabajador.usuario = user
                 trabajador.save()
-                return redirect('becas')
+                
+                # Make the user inactive until they verify email
+                user.email = trabajador.correo
+                user.is_active = False
+                user.save()
+
+                # Generate email verification token and send mail
+                current_site = get_current_site(request)
+                mail_subject = 'Verifica tu cuenta - Becas SNTSA.'
+                message = render_to_string('verificar_correo.html', {
+                    'user': user,
+                    'domain': current_site.domain,
+                    'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                    'token': default_token_generator.make_token(user),
+                })
+                to_email = trabajador.correo
+                email = EmailMessage(
+                    mail_subject, message, to=[to_email]
+                )
+                email.send()
+                
+                logout(request)
+                return render(request, 'espera_verificacion_email.html')
             else:
                 print('Form errors: ', form.errors)
                 return render(request, 'create_trabajador.html', {'form': form})
@@ -593,3 +622,20 @@ def editar_becario(request, becario_id):
             return redirect('ver_becarios')
         else:
             return render(request, 'editar_becario.html', {'form': form, 'becario': becario})
+
+def activate(request, uidb64, token):
+    """
+    Activates the user's account by verifying their email link.
+    """
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+    if user is not None and default_token_generator.check_token(user, token):
+        user.is_active = True
+        user.save()
+        login(request, user)
+        return redirect('becas')
+    else:
+        return HttpResponse('El enlace de confirmación es inválido o ha expirado.')
