@@ -1,4 +1,4 @@
-Hola {{ user.username }},
+Hola {{ user.trabajador.nombre }} {{ user.trabajador.apellido_paterno }}{% if user.trabajador.apellido_materno %} {{ user.trabajador.apellido_materno }}{% endif %},
 
 Por favor, confirma tu dirección de correo electrónico haciendo clic en el siguiente enlace:
 

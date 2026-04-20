@@ -27,5 +27,6 @@ urlpatterns = [
     path('becas/change_password/', views.change_password, name='change_password'),
     path('becas/editar_becario/<int:becario_id>/', views.editar_becario, name='editar_becario'),
     path('activate/<uidb64>/<token>/', views.activate, name='activate'),
+    path('confirm_email/<uidb64>/<token>/<str:encoded_email>/', views.confirm_email_change, name='confirm_email_change'),
     path('media/<path:file_path>', views.download_file, name='download_file'),
 ]

@@ -559,10 +559,40 @@ def editar_usuario(request):
         form = TrabajadorEditForm(instance=trabajador)
         return render(request, 'editar_usuario.html', {'form': form})
     elif request.method == 'POST':
+        old_email = trabajador.correo
         form = TrabajadorEditForm(
             request.POST, request.FILES, instance=trabajador)
         if form.is_valid():
-            form.save()
+            trabajador = form.save(commit=False)
+            new_email = trabajador.correo
+            
+            if old_email != new_email:
+                # Revert string on the object to not commit the change to DB yet
+                trabajador.correo = old_email
+                trabajador.save()
+
+                user = request.user
+                
+                # Generate email verification token and send mail
+                current_site = get_current_site(request)
+                mail_subject = 'Confirma tu nuevo correo - Becas SNTSA.'
+                encoded_email = urlsafe_base64_encode(force_bytes(new_email))
+                message = render_to_string('confirmar_nuevo_correo.html', {
+                    'user': user,
+                    'domain': current_site.domain,
+                    'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                    'token': default_token_generator.make_token(user),
+                    'encoded_email': encoded_email,
+                })
+                to_email = new_email
+                email = EmailMessage(
+                    mail_subject, message, to=[to_email]
+                )
+                email.send()
+                
+                return render(request, 'espera_verificacion_nuevo_email.html')
+
+            trabajador.save()
             return redirect('becas')
         else:
             return render(request, 'editar_usuario.html', {'form': form})
@@ -637,5 +667,29 @@ def activate(request, uidb64, token):
         user.save()
         login(request, user)
         return redirect('becas')
+    else:
+        return HttpResponse('El enlace de confirmación es inválido o ha expirado.')
+
+def confirm_email_change(request, uidb64, token, encoded_email):
+    """
+    Activates the user's new email by verifying their email link.
+    """
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+
+    if user is not None and default_token_generator.check_token(user, token):
+        try:
+            new_email = force_str(urlsafe_base64_decode(encoded_email))
+            user.email = new_email
+            user.save()
+            trabajador = user.trabajador
+            trabajador.correo = new_email
+            trabajador.save()
+            return render(request, 'email_cambiado_exito.html')
+        except Exception:
+            return HttpResponse('Error al decodificar el correo.')
     else:
         return HttpResponse('El enlace de confirmación es inválido o ha expirado.')
