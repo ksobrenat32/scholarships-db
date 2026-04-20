@@ -3,7 +3,7 @@ Hola {{ user.trabajador.nombre }} {{ user.trabajador.apellido_paterno }}{% if us
 Has solicitado cambiar el correo electrónico asociado a tu cuenta de Becas SNTSA.
 Por favor, confirma tu nueva dirección de correo electrónico haciendo clic en el siguiente enlace:
 
-http://{{ domain }}{% url 'confirm_email_change' uidb64=uid token=token encoded_email=encoded_email %}
+{{ request.scheme }}://{{ domain }}{% url 'confirm_email_change' uidb64=uid token=token encoded_email=encoded_email %}
 
 Si no solicitaste este cambio, simplemente ignora este mensaje.
 
