@@ -4,12 +4,20 @@ Models for the becas_sntsa app.
 This file defines the database models for the scholarship application system.
 It includes models for workers, scholars, applications, and related data.
 """
-from django.db import models
+import logging
+import smtplib
+from urllib.parse import urlparse
+from django.db import models, transaction
 from django.db.models import Q
 from django.contrib.auth.models import User
 from django.utils import timezone
+from django.core.mail import EmailMessage
+from django.template.loader import render_to_string
+from django.conf import settings
 
 # Create your models here.
+
+logger = logging.getLogger(__name__)
 
 
 class Seccion(models.Model):
@@ -148,6 +156,42 @@ class Trabajador(models.Model):
     # Campo para verificar si el trabajador ha sido aprobado por el administrador
     aprobado = models.BooleanField(default=False)
 
+    # Campo temporal para correo pendiente de verificación
+    pending_email = models.EmailField(null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        send_approval = False
+        if self.pk:
+            try:
+                old = Trabajador.objects.get(pk=self.pk)
+                if not old.aprobado and self.aprobado:
+                    send_approval = True
+            except Trabajador.DoesNotExist:
+                pass
+        super().save(*args, **kwargs)
+        
+        if send_approval:
+            _parsed = urlparse(settings.URL)
+            domain = _parsed.netloc
+            scheme = _parsed.scheme
+            subject = '¡Tu perfil ha sido aprobado! - Becas SNTSA'
+            message = render_to_string('trabajador_aprobado.html', {
+                'trabajador': self,
+                'domain': domain,
+                'scheme': scheme,
+            })
+            def send_approval_email():
+                try:
+                    email = EmailMessage(subject, message, to=[self.correo])
+                    email.send()
+                except (smtplib.SMTPException, OSError):
+                    logger.exception(
+                        "No se pudo enviar correo de aprobación para trabajador_id=%s",
+                        self.pk
+                    )
+
+            transaction.on_commit(send_approval_email)
+
     def __str__(self):
         """
         Returns a string representation of the worker.
@@ -250,6 +294,43 @@ class Solicitud(models.Model):
     estado = models.CharField(
         max_length=1, choices=ESTADO_CHOICES, default='P')
     notas = models.TextField(null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        send_status_update = False
+        if self.pk:
+            try:
+                old = Solicitud.objects.get(pk=self.pk)
+                if old.estado != self.estado or old.notas != self.notas:
+                    send_status_update = True
+            except Solicitud.DoesNotExist:
+                pass
+        super().save(*args, **kwargs)
+
+        if send_status_update:
+            _parsed = urlparse(settings.URL)
+            domain = _parsed.netloc
+            scheme = _parsed.scheme
+            subject = 'Actualización en tu solicitud de beca - Becas SNTSA'
+            trabajador_obj = self.becario.trabajador.trabajador
+            message = render_to_string('estado_solicitud.html', {
+                'trabajador': trabajador_obj,
+                'becario': self.becario,
+                'solicitud': self,
+                'domain': domain,
+                'scheme': scheme,
+            })
+
+            def send_status_email():
+                try:
+                    email = EmailMessage(subject, message, to=[trabajador_obj.correo])
+                    email.send()
+                except (smtplib.SMTPException, OSError):
+                    logger.exception(
+                        "No se pudo enviar correo de estado para solicitud_id=%s",
+                        self.pk
+                    )
+
+            transaction.on_commit(send_status_email)
 
     class Meta:
         """

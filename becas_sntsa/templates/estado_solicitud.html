@@ -1,0 +1,16 @@
+Hola {{ trabajador.nombre }} {{ trabajador.apellido_paterno }}{% if trabajador.apellido_materno %} {{ trabajador.apellido_materno }}{% endif %},
+
+Te informamos que tu solicitud de beca para "{{ becario.nombre }} {{ becario.apellido_paterno }}" ha cambiado de estado.
+
+El nuevo estado es: {{ solicitud.get_estado_display }}
+{% if solicitud.notas %}
+
+NOTAS ADICIONALES DEL ADMINISTRADOR:
+{{ solicitud.notas }}
+{% endif %}
+
+Puedes revisar los detalles de tus solicitudes en tu perfil en nuestro portal:
+{{ scheme }}://{{ domain }}{% url 'ver_solicitudes' %}
+
+Saludos,
+El equipo de Becas SNTSA

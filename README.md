@@ -59,15 +59,37 @@ The application uses the following main models:
 
 ## Setup and Deployment
 
-### Demo Mode
+### Configuration (.env file)
 
-To run the application in demo mode (using SQLite), you can use the provided Docker image:
+Before running the application in any mode (Native, Demo, or Production), you should configure your environment variables. This is required for everything from database connection to SMTP setup. 
+
+Create a `.env` file in the root of the project by copying the provided template and filling out your values:
 
 ```bash
-podman run -p 8000:8000 ghcr.io/ksobrenat32/scholarships-db:latest
+cp .env.example .env
 ```
 
-This is useful for testing and development without setting up a PostgreSQL database.
+Make sure to adjust the variables inside `.env` to suit your database setup and email sender configuration (such as Gmail).
+
+### Native Execution (Development)
+
+To run the application natively without containers, simply use the provided `dev.sh` script (it will automatically load your `.env` file):
+
+```bash
+./dev.sh
+```
+
+### Demo Mode (Containers)
+
+To run the application in a disposable demo mode (using SQLite) and still test features like email verification, make sure your `.env` file specifically sets `DEMO=True` and `DATABASE_TYPE=sqlite`.
+
+Then, run the provided Docker image passing the environment file:
+
+```bash
+podman run --env-file .env -p 8000:8000 ghcr.io/ksobrenat32/scholarships-db:latest
+```
+
+This is useful for testing, development, or evaluating the system without setting up a PostgreSQL database.
 
 ### Production Mode
 
@@ -83,36 +105,24 @@ podman pod create --name scholarships -p 8000:8000
 
 #### Database Container
 
-Start a PostgreSQL container within the pod:
+Start a PostgreSQL container within the pod (it will read database configuration from your `.env` file):
 
 ```bash
 podman run -d --name scholarships-db \
     --pod scholarships \
-    -e POSTGRES_DB=scholarships \
-    -e POSTGRES_USER=scholarships_user \
-    -e POSTGRES_PASSWORD=scholarships_password \
+    --env-file .env \
     -v /path/to/your/db:/var/lib/postgresql/data:z \
     docker.io/library/postgres:latest
 ```
 
 #### Application Container
 
-Start the application container, linking it to the database:
+Start the application container, linking it to the database. All configuration is loaded from the `.env` file:
 
 ```bash
 podman run -d --name scholarships-app \
     --pod scholarships \
-    -e SECRET_KEY=your_secret_key \
-    -e DEBUG=False \
-    -e DEMO=False \
-    -e URL=http://127.0.0.1:8000 \
-    -e PORT=8000 \
-    -e DATABASE_TYPE=postgresql \
-    -e POSTGRES_DB=scholarships \
-    -e POSTGRES_USER=scholarships_user \
-    -e POSTGRES_PASSWORD=scholarships_password \
-    -e POSTGRES_HOST=localhost \
-    -e POSTGRES_PORT=5432 \
+    --env-file .env \
     -v /path/to/your/media:/code/media:z \
     ghcr.io/ksobrenat32/scholarships-db:latest
 ```

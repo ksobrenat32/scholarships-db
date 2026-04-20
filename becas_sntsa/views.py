@@ -11,10 +11,20 @@ from django.db import IntegrityError
 from django.contrib.auth.decorators import login_required
 from becas_sntsa.forms import TrabajadorCreateForm, BecarioCreateForm, SolicitudAprovechamientoCreateForm, SolicitudExcelenciaCreateForm, SolicitudEspecialCreateForm, TrabajadorEditForm, BecarioEditForm
 from becas_sntsa.models import Trabajador, Becario, Solicitud, SolicitudAprovechamiento, SolicitudExcelencia, SolicitudEspecial
-from django.http import HttpResponseForbidden, FileResponse
+from django.http import HttpResponseForbidden, FileResponse, HttpResponse
+from django.contrib.sites.shortcuts import get_current_site
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
+from django.contrib.auth.tokens import default_token_generator
+from django.template.loader import render_to_string
+from django.core.mail import EmailMessage
 from django.conf import settings
+import logging
 import os
 import re
+import smtplib
+
+logger = logging.getLogger(__name__)
 
 
 def trabajador_required(view_func):
@@ -206,10 +216,46 @@ def create_trabajador(request):
             form = TrabajadorCreateForm(request.POST, request.FILES)
             if form.is_valid():
                 trabajador = form.save(commit=False)
-                trabajador.usuario = User.objects.get(
+                user = User.objects.get(
                     username=request.user.username)
+                trabajador.usuario = user
                 trabajador.save()
-                return redirect('becas')
+                
+                # Make the user inactive until they verify email
+                user.email = trabajador.correo
+                user.is_active = False
+                user.save()
+
+                # Generate email verification token and send mail
+                current_site = get_current_site(request)
+                mail_subject = 'Verifica tu cuenta - Becas SNTSA.'
+                message = render_to_string('verificar_correo.html', {
+                    'user': user,
+                    'domain': current_site.domain,
+                    'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                    'token': default_token_generator.make_token(user),
+                })
+                to_email = trabajador.correo
+                email = EmailMessage(
+                    mail_subject, message, to=[to_email]
+                )
+                try:
+                    email.send()
+                except (smtplib.SMTPException, OSError):
+                    logger.exception(
+                        "No se pudo enviar correo de verificación para usuario_id=%s",
+                        user.pk
+                    )
+                    user.is_active = True
+                    user.save()
+                    trabajador.delete()
+                    return render(request, 'create_trabajador.html', {
+                        'form': TrabajadorCreateForm(),
+                        'error': 'Error al enviar el correo de verificación. Por favor, inténtalo de nuevo.'
+                    })
+
+                logout(request)
+                return render(request, 'espera_verificacion_email.html')
             else:
                 print('Form errors: ', form.errors)
                 return render(request, 'create_trabajador.html', {'form': form})
@@ -530,10 +576,51 @@ def editar_usuario(request):
         form = TrabajadorEditForm(instance=trabajador)
         return render(request, 'editar_usuario.html', {'form': form})
     elif request.method == 'POST':
+        old_email = trabajador.correo
         form = TrabajadorEditForm(
             request.POST, request.FILES, instance=trabajador)
         if form.is_valid():
-            form.save()
+            trabajador = form.save(commit=False)
+            new_email = trabajador.correo
+            
+            if old_email != new_email:
+                # Store pending email server-side before sending verification link
+                trabajador.correo = old_email
+                trabajador.pending_email = new_email
+                trabajador.save()
+
+                user = request.user
+                
+                # Generate email verification token and send mail
+                current_site = get_current_site(request)
+                mail_subject = 'Confirma tu nuevo correo - Becas SNTSA.'
+                message = render_to_string('confirmar_nuevo_correo.html', {
+                    'user': user,
+                    'domain': current_site.domain,
+                    'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                    'token': default_token_generator.make_token(user),
+                })
+                to_email = new_email
+                email = EmailMessage(
+                    mail_subject, message, to=[to_email]
+                )
+                try:
+                    email.send()
+                except (smtplib.SMTPException, OSError):
+                    logger.exception(
+                        "No se pudo enviar correo de confirmación de email para usuario_id=%s",
+                        user.pk
+                    )
+                    trabajador.pending_email = None
+                    trabajador.save()
+                    return render(request, 'editar_usuario.html', {
+                        'form': form,
+                        'error': 'Error al enviar el correo de verificación. Por favor, inténtalo de nuevo.'
+                    })
+                
+                return render(request, 'espera_verificacion_nuevo_email.html')
+
+            trabajador.save()
             return redirect('becas')
         else:
             return render(request, 'editar_usuario.html', {'form': form})
@@ -593,3 +680,47 @@ def editar_becario(request, becario_id):
             return redirect('ver_becarios')
         else:
             return render(request, 'editar_becario.html', {'form': form, 'becario': becario})
+
+def activate(request, uidb64, token):
+    """
+    Activates the user's account by verifying their email link.
+    """
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+    if user is not None and default_token_generator.check_token(user, token):
+        user.is_active = True
+        user.save()
+        login(request, user)
+        return redirect('becas')
+    else:
+        return HttpResponse('El enlace de confirmación es inválido o ha expirado.')
+
+def confirm_email_change(request, uidb64, token):
+    """
+    Activates the user's new email by verifying their email link.
+    """
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+
+    if user is not None and default_token_generator.check_token(user, token):
+        try:
+            trabajador = user.trabajador
+            new_email = trabajador.pending_email
+            if not new_email:
+                return HttpResponse('No hay un cambio de correo pendiente.')
+            user.email = new_email
+            user.save()
+            trabajador.correo = new_email
+            trabajador.pending_email = None
+            trabajador.save()
+            return render(request, 'email_cambiado_exito.html')
+        except Trabajador.DoesNotExist:
+            return HttpResponse('Error al procesar el cambio de correo.')
+    else:
+        return HttpResponse('El enlace de confirmación es inválido o ha expirado.')
