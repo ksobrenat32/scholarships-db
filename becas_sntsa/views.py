@@ -19,8 +19,11 @@ from django.contrib.auth.tokens import default_token_generator
 from django.template.loader import render_to_string
 from django.core.mail import EmailMessage
 from django.conf import settings
+import logging
 import os
 import re
+
+logger = logging.getLogger(__name__)
 
 
 def trabajador_required(view_func):
@@ -235,8 +238,21 @@ def create_trabajador(request):
                 email = EmailMessage(
                     mail_subject, message, to=[to_email]
                 )
-                email.send()
-                
+                try:
+                    email.send()
+                except Exception:
+                    logger.exception(
+                        "No se pudo enviar correo de verificación para usuario_id=%s",
+                        user.pk
+                    )
+                    user.is_active = True
+                    user.save()
+                    trabajador.delete()
+                    return render(request, 'create_trabajador.html', {
+                        'form': TrabajadorCreateForm(),
+                        'error': 'Error al enviar el correo de verificación. Por favor, inténtalo de nuevo.'
+                    })
+
                 logout(request)
                 return render(request, 'espera_verificacion_email.html')
             else:
@@ -567,8 +583,9 @@ def editar_usuario(request):
             new_email = trabajador.correo
             
             if old_email != new_email:
-                # Revert string on the object to not commit the change to DB yet
+                # Store pending email server-side before sending verification link
                 trabajador.correo = old_email
+                trabajador.pending_email = new_email
                 trabajador.save()
 
                 user = request.user
@@ -576,19 +593,29 @@ def editar_usuario(request):
                 # Generate email verification token and send mail
                 current_site = get_current_site(request)
                 mail_subject = 'Confirma tu nuevo correo - Becas SNTSA.'
-                encoded_email = urlsafe_base64_encode(force_bytes(new_email))
                 message = render_to_string('confirmar_nuevo_correo.html', {
                     'user': user,
                     'domain': current_site.domain,
                     'uid': urlsafe_base64_encode(force_bytes(user.pk)),
                     'token': default_token_generator.make_token(user),
-                    'encoded_email': encoded_email,
                 })
                 to_email = new_email
                 email = EmailMessage(
                     mail_subject, message, to=[to_email]
                 )
-                email.send()
+                try:
+                    email.send()
+                except Exception:
+                    logger.exception(
+                        "No se pudo enviar correo de confirmación de email para usuario_id=%s",
+                        user.pk
+                    )
+                    trabajador.pending_email = None
+                    trabajador.save()
+                    return render(request, 'editar_usuario.html', {
+                        'form': form,
+                        'error': 'Error al enviar el correo de verificación. Por favor, inténtalo de nuevo.'
+                    })
                 
                 return render(request, 'espera_verificacion_nuevo_email.html')
 
@@ -670,7 +697,7 @@ def activate(request, uidb64, token):
     else:
         return HttpResponse('El enlace de confirmación es inválido o ha expirado.')
 
-def confirm_email_change(request, uidb64, token, encoded_email):
+def confirm_email_change(request, uidb64, token):
     """
     Activates the user's new email by verifying their email link.
     """
@@ -682,14 +709,17 @@ def confirm_email_change(request, uidb64, token, encoded_email):
 
     if user is not None and default_token_generator.check_token(user, token):
         try:
-            new_email = force_str(urlsafe_base64_decode(encoded_email))
+            trabajador = user.trabajador
+            new_email = trabajador.pending_email
+            if not new_email:
+                return HttpResponse('No hay un cambio de correo pendiente.')
             user.email = new_email
             user.save()
-            trabajador = user.trabajador
             trabajador.correo = new_email
+            trabajador.pending_email = None
             trabajador.save()
             return render(request, 'email_cambiado_exito.html')
         except Exception:
-            return HttpResponse('Error al decodificar el correo.')
+            return HttpResponse('Error al procesar el cambio de correo.')
     else:
         return HttpResponse('El enlace de confirmación es inválido o ha expirado.')

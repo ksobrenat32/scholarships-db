@@ -439,3 +439,196 @@ class TrabajadorNotificationEmailTest(TestCase):
         self.trabajador.refresh_from_db()
         self.assertTrue(self.trabajador.aprobado)
         self.assertEqual(mock_send.call_count, 1)
+
+
+from django.test import override_settings
+from django.contrib.auth.tokens import default_token_generator as token_gen
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+from django.core import mail as django_mail
+from becas_sntsa.models import SolicitudAprovechamiento
+
+
+@override_settings(EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend')
+class EmailVerificationViewTest(TestCase):
+    def setUp(self):
+        self.seccion = Seccion.objects.create(numero=1)
+        self.puesto = Puesto.objects.create(clave='P1')
+        self.jurisdiccion = Jurisdiccion.objects.create(clave='J1')
+        self.lugar = LugarAdscripcion.objects.create(nombre='Lugar 1')
+
+        self.user = User.objects.create_user(
+            username='SAHM910101HDFLNAA9',
+            password='testpassword',
+            is_active=True,
+        )
+        self.trabajador = Trabajador.objects.create(
+            usuario=self.user,
+            nombre='Email',
+            apellido_paterno='Verify',
+            talon_pago_archivo=SimpleUploadedFile("f.txt", b"x"),
+            telefono='1234567890',
+            correo='verify@test.com',
+            seccion=self.seccion,
+            puesto=self.puesto,
+            jurisdiccion=self.jurisdiccion,
+            lugar_adscripcion=self.lugar,
+            aprobado=True,
+        )
+
+    def test_activate_sets_user_active(self):
+        """User starts inactive; hitting activate endpoint sets is_active=True."""
+        self.user.is_active = False
+        self.user.save()
+
+        uid = urlsafe_base64_encode(force_bytes(self.user.pk))
+        token = token_gen.make_token(self.user)
+        response = self.client.get(reverse('activate', args=[uid, token]))
+        self.assertEqual(response.status_code, 302)
+        self.user.refresh_from_db()
+        self.assertTrue(self.user.is_active)
+
+    def test_activate_invalid_token_returns_error(self):
+        uid = urlsafe_base64_encode(force_bytes(self.user.pk))
+        response = self.client.get(reverse('activate', args=[uid, 'invalid-token']))
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('inválido', response.content.decode())
+
+    def test_confirm_email_change_updates_email(self):
+        """confirm_email_change uses pending_email from DB to update User and Trabajador."""
+        new_email = 'newemail@test.com'
+        self.trabajador.pending_email = new_email
+        self.trabajador.save()
+
+        uid = urlsafe_base64_encode(force_bytes(self.user.pk))
+        token = token_gen.make_token(self.user)
+        response = self.client.get(reverse('confirm_email_change', args=[uid, token]))
+        self.assertEqual(response.status_code, 200)
+
+        self.user.refresh_from_db()
+        self.trabajador.refresh_from_db()
+        self.assertEqual(self.user.email, new_email)
+        self.assertEqual(self.trabajador.correo, new_email)
+        self.assertIsNone(self.trabajador.pending_email)
+
+    def test_confirm_email_change_no_pending_email_returns_error(self):
+        """confirm_email_change returns an error when no pending_email is set."""
+        self.trabajador.pending_email = None
+        self.trabajador.save()
+
+        uid = urlsafe_base64_encode(force_bytes(self.user.pk))
+        token = token_gen.make_token(self.user)
+        response = self.client.get(reverse('confirm_email_change', args=[uid, token]))
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('pendiente', response.content.decode())
+
+    def test_confirm_email_change_invalid_token_returns_error(self):
+        uid = urlsafe_base64_encode(force_bytes(self.user.pk))
+        response = self.client.get(reverse('confirm_email_change', args=[uid, 'bad-token']))
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('inválido', response.content.decode())
+
+
+@override_settings(EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend')
+class NotificationEmailOutboxTest(TestCase):
+    def setUp(self):
+        self.seccion = Seccion.objects.create(numero=1)
+        self.puesto = Puesto.objects.create(clave='P1')
+        self.jurisdiccion = Jurisdiccion.objects.create(clave='J1')
+        self.lugar = LugarAdscripcion.objects.create(nombre='Lugar 1')
+        self.grado = Grado.objects.create(clave='G1', nombre='Grado 1')
+
+        self.user = User.objects.create_user(
+            username='SAHM910101HDFLNAAB',
+            password='testpassword',
+        )
+        self.trabajador = Trabajador.objects.create(
+            usuario=self.user,
+            nombre='Notif',
+            apellido_paterno='Test',
+            talon_pago_archivo=SimpleUploadedFile("f.txt", b"x"),
+            telefono='1234567890',
+            correo='notif@test.com',
+            seccion=self.seccion,
+            puesto=self.puesto,
+            jurisdiccion=self.jurisdiccion,
+            lugar_adscripcion=self.lugar,
+            aprobado=False,
+        )
+        self.becario = Becario.objects.create(
+            trabajador=self.user,
+            nombre='Becario',
+            apellido_paterno='Notif',
+            curp='SAHM050101HDFLNAC0',
+            curp_archivo=SimpleUploadedFile("curp.txt", b"x"),
+            acta_nacimiento=SimpleUploadedFile("acta.txt", b"x"),
+        )
+
+    def test_aprobado_transition_sends_email(self):
+        """Approving a Trabajador sends a notification email."""
+        django_mail.outbox = []
+        self.trabajador.aprobado = True
+        with self.captureOnCommitCallbacks(execute=True):
+            self.trabajador.save()
+        self.assertEqual(len(django_mail.outbox), 1)
+        self.assertIn('notif@test.com', django_mail.outbox[0].to)
+
+    def test_no_email_when_aprobado_unchanged(self):
+        """Saving Trabajador without changing aprobado does not send email."""
+        self.trabajador.aprobado = False
+        django_mail.outbox = []
+        with self.captureOnCommitCallbacks(execute=True):
+            self.trabajador.save()
+        self.assertEqual(len(django_mail.outbox), 0)
+
+    def test_solicitud_estado_change_sends_email(self):
+        """Changing solicitud estado triggers a notification email."""
+        solicitud = SolicitudAprovechamiento.objects.create(
+            becario=self.becario,
+            grado=self.grado,
+            promedio=9.0,
+            boleta=SimpleUploadedFile("b.txt", b"x"),
+            recibo_nomina=SimpleUploadedFile("r.txt", b"x"),
+            ine=SimpleUploadedFile("i.txt", b"x"),
+            estado='R',
+        )
+        django_mail.outbox = []
+        solicitud.estado = 'T'
+        with self.captureOnCommitCallbacks(execute=True):
+            solicitud.save()
+        self.assertEqual(len(django_mail.outbox), 1)
+        self.assertIn('notif@test.com', django_mail.outbox[0].to)
+
+    def test_solicitud_notas_change_sends_email(self):
+        """Changing solicitud notas (without changing estado) triggers a notification email."""
+        solicitud = SolicitudAprovechamiento.objects.create(
+            becario=self.becario,
+            grado=self.grado,
+            promedio=9.0,
+            boleta=SimpleUploadedFile("b2.txt", b"x"),
+            recibo_nomina=SimpleUploadedFile("r2.txt", b"x"),
+            ine=SimpleUploadedFile("i2.txt", b"x"),
+            estado='R',
+        )
+        django_mail.outbox = []
+        solicitud.notas = 'Revisar documento X'
+        with self.captureOnCommitCallbacks(execute=True):
+            solicitud.save()
+        self.assertEqual(len(django_mail.outbox), 1)
+        self.assertIn('notif@test.com', django_mail.outbox[0].to)
+
+    def test_solicitud_no_email_when_nothing_changes(self):
+        """Saving solicitud without estado/notas changes does not send email."""
+        solicitud = SolicitudAprovechamiento.objects.create(
+            becario=self.becario,
+            grado=self.grado,
+            promedio=9.0,
+            boleta=SimpleUploadedFile("b3.txt", b"x"),
+            recibo_nomina=SimpleUploadedFile("r3.txt", b"x"),
+            ine=SimpleUploadedFile("i3.txt", b"x"),
+            estado='R',
+        )
+        django_mail.outbox = []
+        with self.captureOnCommitCallbacks(execute=True):
+            solicitud.save()
+        self.assertEqual(len(django_mail.outbox), 0)

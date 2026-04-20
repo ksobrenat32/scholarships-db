@@ -5,6 +5,7 @@ This file defines the database models for the scholarship application system.
 It includes models for workers, scholars, applications, and related data.
 """
 import logging
+from urllib.parse import urlparse
 from django.db import models, transaction
 from django.db.models import Q
 from django.contrib.auth.models import User
@@ -154,6 +155,9 @@ class Trabajador(models.Model):
     # Campo para verificar si el trabajador ha sido aprobado por el administrador
     aprobado = models.BooleanField(default=False)
 
+    # Campo temporal para correo pendiente de verificación
+    pending_email = models.EmailField(null=True, blank=True)
+
     def save(self, *args, **kwargs):
         send_approval = False
         if self.pk:
@@ -166,11 +170,14 @@ class Trabajador(models.Model):
         super().save(*args, **kwargs)
         
         if send_approval:
-            domain = settings.URL.split("://")[-1]
+            _parsed = urlparse(settings.URL)
+            domain = _parsed.netloc
+            scheme = _parsed.scheme
             subject = '¡Tu perfil ha sido aprobado! - Becas SNTSA'
             message = render_to_string('trabajador_aprobado.html', {
                 'trabajador': self,
                 'domain': domain,
+                'scheme': scheme,
             })
             def send_approval_email():
                 try:
@@ -292,14 +299,16 @@ class Solicitud(models.Model):
         if self.pk:
             try:
                 old = Solicitud.objects.get(pk=self.pk)
-                if old.estado != self.estado:
+                if old.estado != self.estado or old.notas != self.notas:
                     send_status_update = True
             except Solicitud.DoesNotExist:
                 pass
         super().save(*args, **kwargs)
-        
+
         if send_status_update:
-            domain = settings.URL.split("://")[-1]
+            _parsed = urlparse(settings.URL)
+            domain = _parsed.netloc
+            scheme = _parsed.scheme
             subject = 'Actualización en tu solicitud de beca - Becas SNTSA'
             trabajador_obj = self.becario.trabajador.trabajador
             message = render_to_string('estado_solicitud.html', {
@@ -307,9 +316,20 @@ class Solicitud(models.Model):
                 'becario': self.becario,
                 'solicitud': self,
                 'domain': domain,
+                'scheme': scheme,
             })
-            email = EmailMessage(subject, message, to=[trabajador_obj.correo])
-            email.send()
+
+            def send_status_email():
+                try:
+                    email = EmailMessage(subject, message, to=[trabajador_obj.correo])
+                    email.send()
+                except Exception:
+                    logger.exception(
+                        "No se pudo enviar correo de estado para solicitud_id=%s",
+                        self.pk
+                    )
+
+            transaction.on_commit(send_status_email)
 
     class Meta:
         """
