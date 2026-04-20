@@ -8,6 +8,9 @@ from django.db import models
 from django.db.models import Q
 from django.contrib.auth.models import User
 from django.utils import timezone
+from django.core.mail import EmailMessage
+from django.template.loader import render_to_string
+from django.conf import settings
 
 # Create your models here.
 
@@ -148,6 +151,27 @@ class Trabajador(models.Model):
     # Campo para verificar si el trabajador ha sido aprobado por el administrador
     aprobado = models.BooleanField(default=False)
 
+    def save(self, *args, **kwargs):
+        send_approval = False
+        if self.pk:
+            try:
+                old = Trabajador.objects.get(pk=self.pk)
+                if not old.aprobado and self.aprobado:
+                    send_approval = True
+            except Trabajador.DoesNotExist:
+                pass
+        super().save(*args, **kwargs)
+        
+        if send_approval:
+            domain = settings.URL.split("://")[-1]
+            subject = '¡Tu perfil ha sido aprobado! - Becas SNTSA'
+            message = render_to_string('trabajador_aprobado.html', {
+                'trabajador': self,
+                'domain': domain,
+            })
+            email = EmailMessage(subject, message, to=[self.correo])
+            email.send()
+
     def __str__(self):
         """
         Returns a string representation of the worker.
@@ -250,6 +274,30 @@ class Solicitud(models.Model):
     estado = models.CharField(
         max_length=1, choices=ESTADO_CHOICES, default='P')
     notas = models.TextField(null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        send_status_update = False
+        if self.pk:
+            try:
+                old = Solicitud.objects.get(pk=self.pk)
+                if old.estado != self.estado:
+                    send_status_update = True
+            except Solicitud.DoesNotExist:
+                pass
+        super().save(*args, **kwargs)
+        
+        if send_status_update:
+            domain = settings.URL.split("://")[-1]
+            subject = 'Actualización en tu solicitud de beca - Becas SNTSA'
+            trabajador_obj = self.becario.trabajador.trabajador
+            message = render_to_string('estado_solicitud.html', {
+                'trabajador': trabajador_obj,
+                'becario': self.becario,
+                'solicitud': self,
+                'domain': domain,
+            })
+            email = EmailMessage(subject, message, to=[trabajador_obj.correo])
+            email.send()
 
     class Meta:
         """

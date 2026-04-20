@@ -1,0 +1,9 @@
+Hola {{ trabajador.nombre }} {{ trabajador.apellido_paterno }}{% if trabajador.apellido_materno %} {{ trabajador.apellido_materno }}{% endif %},
+
+¡Buenas noticias! Tu perfil como trabajador en el sistema de Becas SNTSA ha sido aprobado por un administrador.
+Ya puedes iniciar sesión y comenzar a registrar a tus becarios y solicitar becas.
+
+http://{{ domain }}{% url 'signin' %}
+
+Saludos,
+El equipo de Becas SNTSA
