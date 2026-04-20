@@ -2,7 +2,7 @@ Hola {{ user.trabajador.nombre }} {{ user.trabajador.apellido_paterno }}{% if us
 
 Por favor, confirma tu dirección de correo electrónico haciendo clic en el siguiente enlace:
 
-http://{{ domain }}{% url 'activate' uidb64=uid token=token %}
+{{ protocol }}://{{ domain }}{% url 'activate' uidb64=uid token=token %}
 
 Si no creaste una cuenta en Becas SNTSA, simplemente ignora este mensaje.
 
