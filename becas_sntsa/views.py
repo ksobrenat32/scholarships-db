@@ -232,6 +232,7 @@ def create_trabajador(request):
                 message = render_to_string('verificar_correo.html', {
                     'user': user,
                     'domain': current_site.domain,
+                    'protocol': request.scheme,
                     'uid': urlsafe_base64_encode(force_bytes(user.pk)),
                     'token': default_token_generator.make_token(user),
                 })
@@ -597,6 +598,7 @@ def editar_usuario(request):
                 message = render_to_string('confirmar_nuevo_correo.html', {
                     'user': user,
                     'domain': current_site.domain,
+                    'protocol': request.scheme,
                     'uid': urlsafe_base64_encode(force_bytes(user.pk)),
                     'token': default_token_generator.make_token(user),
                 })
