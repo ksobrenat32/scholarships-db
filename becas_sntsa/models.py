@@ -85,7 +85,7 @@ class LugarAdscripcion(models.Model):
         alias (str, optional): An alias for the place of assignment.
         nombre (str): The name of the place of assignment.
     """
-    alias = models.CharField(max_length=32, null=True, blank=True)
+    alias = models.CharField(max_length=64, null=True, blank=True)
     nombre = models.CharField(max_length=128)
 
     def __str__(self):
