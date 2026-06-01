@@ -89,9 +89,19 @@ Then, run the provided Docker image passing the environment file:
 podman run --env-file .env -p 8000:8000 ghcr.io/ksobrenat32/scholarships-db:latest
 ```
 
-This is useful for testing, development, or evaluating the system without setting up a PostgreSQL database.
+*Note: In Demo mode, an admin account is automatically created with the username `admin` and password `admin`.*
 
-### Production Mode
+If you run the container without specifying a name (as above) and need to manually create another admin account, first find the container ID or name:
+
+```bash
+podman ps
+```
+
+Then, use that ID or name to execute the command:
+
+```bash
+podman exec -it <container_id_or_name> python manage.py createsuperuser
+```
 
 For a production environment, it is recommended to use PostgreSQL as the database. The following instructions describe how to set up the application and database using Podman.
 
