@@ -7,15 +7,29 @@ import re
 from django import forms
 from django.forms import ModelForm
 from django.core.exceptions import ValidationError
-from becas_sntsa.models import Trabajador, Becario, SolicitudAprovechamiento, SolicitudExcelencia, SolicitudEspecial
+from becas_sntsa.models import (
+    Trabajador, Becario, SolicitudAprovechamiento,
+    SolicitudExcelencia, SolicitudEspecial,
+)
+
+# Pre-compiled CURP regex for form widgets and validation
+_CURP_REGEX = (
+    r'^[A-Z]{1}[AEIOU]{1}[A-Z]{2}[0-9]{2}'
+    r'(0[1-9]|1[0-2])(0[1-9]|1[0-9]|2[0-9]|3[0-1])'
+    r'[HM]{1}'
+    r'(AS|BC|BS|CC|CS|CH|CL|CM|DF|DG|GT|GR|HG|JC|MC|MN|MS|NT|NL|OC|PL|QT|QR|SP|SL|SR|TC|TS|TL|VZ|YN|ZS|NE)'
+    r'[A-Z]{3}[A-Z0-9]{1}[0-9]{1}$'
+)
+
 
 def validar_curp(curp):
     """
     Valida el formato de la CURP.
     """
-    regex = r"^[A-Z]{1}[AEIOU]{1}[A-Z]{2}[0-9]{2}(0[1-9]|1[0-2])(0[1-9]|1[0-9]|2[0-9]|3[0-1])[HM]{1}(AS|BC|BS|CC|CS|CH|CL|CM|DF|DG|GT|GR|HG|JC|MC|MN|MS|NT|NL|OC|PL|QT|QR|SP|SL|SR|TC|TS|TL|VZ|YN|ZS|NE)[A-Z]{3}[A-Z0-9]{1}[0-9]{1}$"
+    regex = _CURP_REGEX
     if not re.match(regex, curp):
         raise ValidationError('El formato de la CURP no es válido.')
+
 
 class TrabajadorCreateForm(ModelForm):
     """
@@ -45,11 +59,10 @@ class BecarioCreateForm(ModelForm):
         fields = ['nombre', 'apellido_paterno', 'apellido_materno',
                   'curp', 'curp_archivo', 'acta_nacimiento']
         widgets = {
-            'curp': forms.TextInput(attrs={
-                'pattern': r'^[A-Z]{1}[AEIOU]{1}[A-Z]{2}[0-9]{2}(0[1-9]|1[0-2])(0[1-9]|1[0-9]|2[0-9]|3[0-1])[HM]{1}(AS|BC|BS|CC|CS|CH|CL|CM|DF|DG|GT|GR|HG|JC|MC|MN|MS|NT|NL|OC|PL|QT|QR|SP|SL|SR|TC|TS|TL|VZ|YN|ZS|NE)[A-Z]{3}[A-Z0-9]{1}[0-9]{1}$',
-                'title': 'Ingrese un formato de CURP válido de 18 caracteres'
-            })
-        }
+            'curp': forms.TextInput(
+                attrs={
+                    'pattern': _CURP_REGEX,
+                    'title': 'Ingrese un formato de CURP válido de 18 caracteres'})}
 
     def clean_curp(self):
         curp = self.cleaned_data.get('curp')
@@ -86,11 +99,10 @@ class BecarioEditForm(ModelForm):
         fields = ['nombre', 'apellido_paterno', 'apellido_materno',
                   'curp', 'curp_archivo', 'acta_nacimiento']
         widgets = {
-            'curp': forms.TextInput(attrs={
-                'pattern': r'^[A-Z]{1}[AEIOU]{1}[A-Z]{2}[0-9]{2}(0[1-9]|1[0-2])(0[1-9]|1[0-9]|2[0-9]|3[0-1])[HM]{1}(AS|BC|BS|CC|CS|CH|CL|CM|DF|DG|GT|GR|HG|JC|MC|MN|MS|NT|NL|OC|PL|QT|QR|SP|SL|SR|TC|TS|TL|VZ|YN|ZS|NE)[A-Z]{3}[A-Z0-9]{1}[0-9]{1}$',
-                'title': 'Ingrese un formato de CURP válido de 18 caracteres'
-            })
-        }
+            'curp': forms.TextInput(
+                attrs={
+                    'pattern': _CURP_REGEX,
+                    'title': 'Ingrese un formato de CURP válido de 18 caracteres'})}
 
     def clean_curp(self):
         curp = self.cleaned_data.get('curp')

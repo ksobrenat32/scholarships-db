@@ -169,7 +169,7 @@ class Trabajador(models.Model):
             except Trabajador.DoesNotExist:
                 pass
         super().save(*args, **kwargs)
-        
+
         if send_approval:
             _parsed = urlparse(settings.URL)
             domain = _parsed.netloc
@@ -180,6 +180,7 @@ class Trabajador(models.Model):
                 'domain': domain,
                 'scheme': scheme,
             })
+
             def send_approval_email():
                 try:
                     email = EmailMessage(subject, message, to=[self.correo])

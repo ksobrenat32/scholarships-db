@@ -1,0 +1,13 @@
+[flake8]
+# Django projects commonly use 119 chars for line length
+max-line-length = 119
+# Exclude migrations, venv, and other non-source dirs
+exclude =
+    .git,
+    __pycache__,
+    venv,
+    .claude,
+    migrations,
+    settings.py
+# Ignore E203 (whitespace before ':') - conflicts with black/autopep8
+extend-ignore = E203, W503
