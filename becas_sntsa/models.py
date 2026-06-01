@@ -292,7 +292,7 @@ class Solicitud(models.Model):
         ('F', 'Beca no otorgada'),
     ]
     estado = models.CharField(
-        max_length=1, choices=ESTADO_CHOICES, default='P')
+        max_length=1, choices=ESTADO_CHOICES, default='R')
     notas = models.TextField(null=True, blank=True)
 
     def save(self, *args, **kwargs):

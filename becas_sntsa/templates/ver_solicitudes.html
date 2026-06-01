@@ -18,27 +18,27 @@
             <tr>
                 <td>{{ solicitud.becario }}</td>
                 <td>Aprovechamiento</td>
-                <td>{{ solicitud.fecha_solicitud }}</td>
+                <td>{{ solicitud.fecha_solicitud|date:"Y-m-d" }}</td>
                 <td>{{ solicitud.get_estado_display }}</td>
-                <td>{{ solicitud.notas }}</td>
+                <td>{{ solicitud.notas|default_if_none:"" }}</td>
             </tr>
             {% endfor %}
             {% for solicitud in solicitudes_excelencia %}
             <tr>
                 <td>{{ solicitud.becario }}</td>
                 <td>Excelencia</td>
-                <td>{{ solicitud.fecha_solicitud }}</td>
+                <td>{{ solicitud.fecha_solicitud|date:"Y-m-d" }}</td>
                 <td>{{ solicitud.get_estado_display }}</td>
-                <td>{{ solicitud.notas }}</td>
+                <td>{{ solicitud.notas|default_if_none:"" }}</td>
             </tr>
             {% endfor %}
             {% for solicitud in solicitudes_especiales %}
             <tr>
                 <td>{{ solicitud.becario }}</td>
                 <td>Educación Especial</td>
-                <td>{{ solicitud.fecha_solicitud }}</td>
+                <td>{{ solicitud.fecha_solicitud|date:"Y-m-d" }}</td>
                 <td>{{ solicitud.get_estado_display }}</td>
-                <td>{{ solicitud.notas }}</td>
+                <td>{{ solicitud.notas|default_if_none:"" }}</td>
             </tr>
             {% endfor %}
         </tbody>
@@ -47,7 +47,12 @@
 
 <script>
     $(document).ready(function() {
-        $('#solicitudesTable').DataTable();
+        $('#solicitudesTable').DataTable({
+            order: [[2, 'desc']],
+            columnDefs: [
+                { type: 'date', targets: 2 }
+            ]
+        });
     });
 </script>
 {% endblock %}
