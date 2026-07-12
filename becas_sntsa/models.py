@@ -288,7 +288,7 @@ class Solicitud(models.Model):
     ESTADO_CHOICES = [
         ('R', 'Solicitud recibida'),
         ('E', 'Error en documentos, revisar notas'),
-        ('P', 'En espera de resultados'),
+        ('P', 'Solicitud recibida y en espera de sorteo'),
         ('T', 'Beca otorgada'),
         ('F', 'Beca no otorgada'),
     ]

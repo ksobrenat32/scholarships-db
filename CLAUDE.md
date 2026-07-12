@@ -71,7 +71,7 @@ The standard view stack is: `@login_required` → `@trabajador_required` → `@a
 |------|---------|---------|
 | `R` | Solicitud recibida | Received |
 | `E` | Error en documentos, revisar notas | Document error, check notes |
-| `P` | En espera de resultados | Awaiting results |
+| `P` | Solicitud recibida y en espera de sorteo | Awaiting results |
 | `T` | Beca otorgada | Scholarship granted |
 | `F` | Beca no otorgada | Scholarship not granted |
 
