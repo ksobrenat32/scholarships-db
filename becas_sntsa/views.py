@@ -6,11 +6,18 @@ This file contains the view functions that handle requests and responses for the
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordChangeForm
 from django.contrib.auth.models import User
-from django.contrib.auth import login, logout, authenticate, update_session_auth_hash
+from django.contrib.auth import login, logout, authenticate
 from django.db import IntegrityError
 from django.contrib.auth.decorators import login_required
-from becas_sntsa.forms import TrabajadorCreateForm, BecarioCreateForm, SolicitudAprovechamientoCreateForm, SolicitudExcelenciaCreateForm, SolicitudEspecialCreateForm, TrabajadorEditForm, BecarioEditForm
-from becas_sntsa.models import Trabajador, Becario, Solicitud, SolicitudAprovechamiento, SolicitudExcelencia, SolicitudEspecial
+from becas_sntsa.forms import (
+    TrabajadorCreateForm, BecarioCreateForm,
+    SolicitudAprovechamientoCreateForm, SolicitudExcelenciaCreateForm,
+    SolicitudEspecialCreateForm, TrabajadorEditForm, BecarioEditForm,
+)
+from becas_sntsa.models import (
+    Trabajador, Becario, Solicitud, SolicitudAprovechamiento,
+    SolicitudExcelencia, SolicitudEspecial,
+)
 from django.http import HttpResponseForbidden, FileResponse, HttpResponse
 from django.contrib.sites.shortcuts import get_current_site
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
@@ -220,7 +227,7 @@ def create_trabajador(request):
                     username=request.user.username)
                 trabajador.usuario = user
                 trabajador.save()
-                
+
                 # Make the user inactive until they verify email
                 user.email = trabajador.correo
                 user.is_active = False
@@ -252,7 +259,7 @@ def create_trabajador(request):
                     trabajador.delete()
                     return render(request, 'create_trabajador.html', {
                         'form': TrabajadorCreateForm(),
-                        'error': 'Error al enviar el correo de verificación. Por favor, inténtalo de nuevo.'
+                        'error': 'Error al enviar el correo de verificación. Por favor, inténtalo más tarde.'
                     })
 
                 logout(request)
@@ -363,7 +370,8 @@ def create_solicitud_aprovechamiento(request):
             solicitud.save()
             return redirect('becas')
         else:
-            return render(request, 'create_solicitud_aprovechamiento.html', {'form': form, 'error': 'Error en la solicitud'})
+            return render(request, 'create_solicitud_aprovechamiento.html',
+                          {'form': form, 'error': 'Error en la solicitud'})
 
 
 @login_required
@@ -403,7 +411,8 @@ def create_solicitud_excelencia(request):
             solicitud.save()
             return redirect('becas')
         else:
-            return render(request, 'create_solicitud_excelencia.html', {'form': form, 'error': 'Error en la solicitud'})
+            return render(request, 'create_solicitud_excelencia.html', {
+                          'form': form, 'error': 'Error en la solicitud'})
 
 
 @login_required
@@ -469,11 +478,17 @@ def download_file(request, file_path):
                 # Check if it's the trabajador's own file
                 if trabajador.talon_pago_archivo and clean_file_path == trabajador.talon_pago_archivo.name:
                     allowed = True
-                
+
                 # Check if it's a file from their becarios
-                elif any(clean_file_path in [b.curp_archivo.name if b.curp_archivo else '', b.acta_nacimiento.name if b.acta_nacimiento else ''] for b in trabajador.usuario.becario_set.all()):
+                elif any(
+                    clean_file_path in [
+                        b.curp_archivo.name if b.curp_archivo else '',
+                        b.acta_nacimiento.name if b.acta_nacimiento else '',
+                    ]
+                    for b in trabajador.usuario.becario_set.all()
+                ):
                     allowed = True
-                
+
                 # Check if it's a file from their solicitudes
                 else:
                     for becario in trabajador.usuario.becario_set.all():
@@ -482,20 +497,32 @@ def download_file(request, file_path):
                                 allowed = True
                             if solicitud.ine and clean_file_path == solicitud.ine.name:
                                 allowed = True
-                            
+
                             # Check subclasses explicitly
-                            if hasattr(solicitud, 'solicitudaprovechamiento') and solicitud.solicitudaprovechamiento.boleta and clean_file_path == solicitud.solicitudaprovechamiento.boleta.name:
+                            if (
+                                hasattr(solicitud, 'solicitudaprovechamiento')
+                                and solicitud.solicitudaprovechamiento.boleta
+                                and clean_file_path == solicitud.solicitudaprovechamiento.boleta.name
+                            ):
                                 allowed = True
-                            elif hasattr(solicitud, 'solicitudexcelencia') and solicitud.solicitudexcelencia.boleta and clean_file_path == solicitud.solicitudexcelencia.boleta.name:
+                            elif (
+                                hasattr(solicitud, 'solicitudexcelencia')
+                                and solicitud.solicitudexcelencia.boleta
+                                and clean_file_path == solicitud.solicitudexcelencia.boleta.name
+                            ):
                                 allowed = True
                             elif hasattr(solicitud, 'solicitudespecial'):
                                 especial = solicitud.solicitudespecial
-                                if (especial.certificado_medico and clean_file_path == especial.certificado_medico.name) or \
-                                   (especial.certificado_escolar and clean_file_path == especial.certificado_escolar.name):
+                                if (
+                                    (especial.certificado_medico
+                                     and clean_file_path == especial.certificado_medico.name)
+                                    or (especial.certificado_escolar
+                                        and clean_file_path == especial.certificado_escolar.name)
+                                ):
                                     allowed = True
         except Exception:
             pass
-            
+
         if not allowed:
             return HttpResponseForbidden("You do not have permission to access this file.")
 
@@ -583,7 +610,7 @@ def editar_usuario(request):
         if form.is_valid():
             trabajador = form.save(commit=False)
             new_email = trabajador.correo
-            
+
             if old_email != new_email:
                 # Store pending email server-side before sending verification link
                 trabajador.correo = old_email
@@ -591,7 +618,7 @@ def editar_usuario(request):
                 trabajador.save()
 
                 user = request.user
-                
+
                 # Generate email verification token and send mail
                 current_site = get_current_site(request)
                 mail_subject = 'Confirma tu nuevo correo - Becas SNTSA.'
@@ -617,9 +644,9 @@ def editar_usuario(request):
                     trabajador.save()
                     return render(request, 'editar_usuario.html', {
                         'form': form,
-                        'error': 'Error al enviar el correo de verificación. Por favor, inténtalo de nuevo.'
+                        'error': 'Error al enviar el correo de verificación. Por favor, inténtalo más tarde.'
                     })
-                
+
                 return render(request, 'espera_verificacion_nuevo_email.html')
 
             trabajador.save()
@@ -669,7 +696,10 @@ def editar_becario(request, becario_id):
         becario=becario, estado__in=['R', 'P', 'T']).exists()
     if valid_solicitudes:
         return render(request, 'editar_becario.html', {
-            'error': 'Este becario tiene una solicitud en curso o aprobada. No se puede editar. Por favor, crea un nuevo becario si es necesario.'
+            'error': (
+                'Este becario tiene una solicitud en curso o aprobada. '
+                'No se puede editar. Por favor, crea un nuevo becario si es necesario.'
+            ),
         })
 
     if request.method == 'GET':
@@ -683,6 +713,7 @@ def editar_becario(request, becario_id):
         else:
             return render(request, 'editar_becario.html', {'form': form, 'becario': becario})
 
+
 def activate(request, uidb64, token):
     """
     Activates the user's account by verifying their email link.
@@ -690,7 +721,7 @@ def activate(request, uidb64, token):
     try:
         uid = force_str(urlsafe_base64_decode(uidb64))
         user = User.objects.get(pk=uid)
-    except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
         user = None
     if user is not None and default_token_generator.check_token(user, token):
         user.is_active = True
@@ -700,6 +731,7 @@ def activate(request, uidb64, token):
     else:
         return HttpResponse('El enlace de confirmación es inválido o ha expirado.')
 
+
 def confirm_email_change(request, uidb64, token):
     """
     Activates the user's new email by verifying their email link.
@@ -707,7 +739,7 @@ def confirm_email_change(request, uidb64, token):
     try:
         uid = force_str(urlsafe_base64_decode(uidb64))
         user = User.objects.get(pk=uid)
-    except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
         user = None
 
     if user is not None and default_token_generator.check_token(user, token):

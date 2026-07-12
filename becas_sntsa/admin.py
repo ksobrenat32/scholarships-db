@@ -6,7 +6,10 @@ This file defines how the models are displayed and managed in the Django admin i
 from django.contrib import admin
 from django.urls import reverse
 from django.utils.html import format_html
-from becas_sntsa.models import Seccion, Puesto, LugarAdscripcion, Grado, Trabajador, Becario, SolicitudAprovechamiento, SolicitudExcelencia, SolicitudEspecial
+from becas_sntsa.models import (
+    Seccion, Puesto, LugarAdscripcion, Grado, Trabajador, Becario,
+    SolicitudAprovechamiento, SolicitudExcelencia, SolicitudEspecial,
+)
 
 
 admin.site.register(Seccion)
@@ -35,7 +38,7 @@ class SolicitudAdmin(admin.ModelAdmin):
     Base admin configuration for all Solicitud models.
     """
     search_fields = ['becario__curp',
-                       'fecha_solicitud', 'becario__trabajador__username']
+                     'fecha_solicitud', 'becario__trabajador__username']
     list_display = ('__str__', 'get_trabajador')
     readonly_fields = ('get_trabajador',)
 

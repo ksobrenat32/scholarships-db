@@ -4,7 +4,11 @@ A Django management command to generate users, scholars, and applications for te
 from django.core.management.base import BaseCommand
 import random
 from faker import Faker
-from becas_sntsa.models import User, Trabajador, Becario, Solicitud, Seccion, Puesto, Jurisdiccion, LugarAdscripcion, Grado, SolicitudAprovechamiento, SolicitudExcelencia, SolicitudEspecial
+from becas_sntsa.models import (
+    User, Trabajador, Becario, Solicitud, Seccion, Puesto, Jurisdiccion,
+    LugarAdscripcion, Grado, SolicitudAprovechamiento, SolicitudExcelencia,
+    SolicitudEspecial,
+)
 
 
 def generate_curp(nombre, apellido_paterno, apellido_materno):

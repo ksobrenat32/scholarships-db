@@ -21,12 +21,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # Helper function to convert string to boolean
+
+
 def str_to_bool(value):
     if isinstance(value, bool):
         return value
     if value.lower() in ('true', '1', 'yes', 'on'):
         return True
     return False
+
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('SECRET_KEY', get_random_secret_key())
@@ -55,13 +58,13 @@ CSRF_TRUSTED_ORIGINS = [URL]
 DEMO = str_to_bool(os.environ.get('DEMO', 'True'))
 if DEMO:
     DEBUG = True  # Enable debug mode for demo
-    SECRET_KEY = get_random_secret_key() # Generate a random secret key for demo mode
+    SECRET_KEY = get_random_secret_key()  # Generate a random secret key for demo mode
     DATABASE_TYPE = 'sqlite'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 if not DEMO:
-    DATABASE_TYPE = os.environ.get('DATABASE_TYPE', 'postgresql') 
+    DATABASE_TYPE = os.environ.get('DATABASE_TYPE', 'postgresql')
 if DATABASE_TYPE == 'postgresql':
     # PostgreSQL settings
     DATABASES = {
