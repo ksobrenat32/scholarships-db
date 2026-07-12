@@ -259,7 +259,7 @@ def create_trabajador(request):
                     trabajador.delete()
                     return render(request, 'create_trabajador.html', {
                         'form': TrabajadorCreateForm(),
-                        'error': 'Error al enviar el correo de verificación. Por favor, inténtalo de nuevo.'
+                        'error': 'Error al enviar el correo de verificación. Por favor, inténtalo más tarde.'
                     })
 
                 logout(request)
@@ -644,7 +644,7 @@ def editar_usuario(request):
                     trabajador.save()
                     return render(request, 'editar_usuario.html', {
                         'form': form,
-                        'error': 'Error al enviar el correo de verificación. Por favor, inténtalo de nuevo.'
+                        'error': 'Error al enviar el correo de verificación. Por favor, inténtalo más tarde.'
                     })
 
                 return render(request, 'espera_verificacion_nuevo_email.html')
